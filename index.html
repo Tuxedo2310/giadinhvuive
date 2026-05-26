@@ -28,7 +28,6 @@
 <div class="max-w-6xl mx-auto px-4 pt-6">
 
   <div class="relative overflow-hidden bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 text-white rounded-3xl shadow-xl mb-6 flex flex-col md:flex-row md:justify-between md:items-stretch min-h-[160px]">
-    
     <div class="p-6 md:p-8 flex flex-col justify-center relative z-10 flex-1">
       <h1 class="text-4xl font-black tracking-tight drop-shadow-md flex items-center gap-2">
         🌞 SUMMER TEAM FAMILY
@@ -175,10 +174,8 @@
 </div>
 
 <script>
-// LIÊN KẾT GOOGLE APP SCRIPT CỦA GIA ĐÌNH BẠN ĐƯỢC GIỮ NGUYÊN VÀ HOẠT ĐỘNG ÔN ĐỊNH
 const CONFIG_DATABASE_URL = "https://script.google.com/macros/s/AKfycbz1mwg470fhqS1UtF8unQUpDlDoAamZDKkYo2OUaCieHPUpTlRq7s-IS3qvfnXEh_P2_w/exec";
 
-// THAY ĐỔI TOÀN BỘ SANG LINK SẠCH KHÔNG BỊ CHẶN BỞI CHÍNH SÁCH BẢO MẬT CỦA GITHUB ONLINE
 const soundClick = new Audio('https://actions.google.com/sounds/v1/ui/click_on_button.ogg'); 
 const soundApprove = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'); 
 const soundReward = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg'); 
@@ -188,20 +185,13 @@ let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = [
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
 let isAudioInitialized = false;
 
-// HÀM TOÀN DIỆN: MỞ KHÓA TOÀN BỘ QUYỀN PHÁT TIẾNG NGAY TỪ LƯỢT CHẠM ĐẦU TIÊN CỦA CON/BỐ MẸ
 function initAudioOnFirstTouch() {
   if (isAudioInitialized) return;
-  
-  // Chạy mờ ngầm để giải phóng bộ chặn âm thanh tự động của Google Chrome/Safari trên Mobile
   soundClick.play().then(() => soundClick.pause()).catch(() => {});
   soundApprove.play().then(() => soundApprove.pause()).catch(() => {});
   soundReward.play().then(() => soundReward.pause()).catch(() => {});
   soundPenalty.play().then(() => soundPenalty.pause()).catch(() => {});
-  
   isAudioInitialized = true;
-  console.log("🔊 Hệ thống âm thanh đã kích hoạt online an toàn.");
-  
-  // Kích hoạt cơ chế kiểm tra phạt sang ngày mới an toàn sau khi đã có tương tác trang
   autoResetDailyTasks();
 }
 
@@ -226,9 +216,9 @@ function handleTemplateChange() {
 }
 handleTemplateChange();
 
-async function cloudFetch() {
+// cloudFetchSilent: Hàm tải dữ liệu chạy ngầm, không hiện màn hình Loading che mắt các con
+async function cloudFetchSilent() {
   if(!CONFIG_DATABASE_URL) return;
-  document.getElementById('loadingUi').classList.remove('hidden');
   try {
     const res = await fetch(CONFIG_DATABASE_URL);
     const cloudData = await res.json();
@@ -244,9 +234,16 @@ async function cloudFetch() {
       if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
       if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
     }
-  } catch(e) { console.error("Lỗi tải đám mây:", e); }
-  document.getElementById('loadingUi').classList.add('hidden');
+  } catch(e) { console.error("Lỗi tải ngầm đám mây:", e); }
   updateUIElements();
+}
+
+// Giữ nguyên hàm cloudFetch có loading khi chạy mở trang lần đầu
+async function cloudFetchWithLoading() {
+  if(!CONFIG_DATABASE_URL) return;
+  document.getElementById('loadingUi').classList.remove('hidden');
+  await cloudFetchSilent();
+  document.getElementById('loadingUi').classList.add('hidden');
 }
 
 async function cloudPush() {
@@ -401,7 +398,7 @@ function saveHistoryLocal(item, type) {
 
 function renderHistory() {
   const container = document.getElementById('historyContainer');
-  if(!taskHistory || taskHistory.length === 0) { container.innerHTML = '<div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào.</div>'; return; }
+  if(!taskHistory || taskHistory.length === 0) { container.innerHTML = '<div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào được ghi nhận.</div>'; return; }
   container.innerHTML = taskHistory.map(item => {
     if (item.type === 'reward') {
       return `<div class="bg-red-50/50 border border-red-100 rounded-xl p-3 flex justify-between items-center text-xs">
@@ -422,7 +419,6 @@ function renderHistory() {
   }).join('');
 }
 
-// KHU VỰC SỬA LỖI AVATAR: NÉN ẢNH ĐẠI DIỆN SIÊU NHỎ GỌN TRƯỚC KHI ĐẨY LÊN GOOGLE SHEETS
 function loadAvatar(event, id) {
   const file = event.target.files[0]; if(!file) return;
   const reader = new FileReader();
@@ -430,26 +426,15 @@ function loadAvatar(event, id) {
     const img = new Image();
     img.onload = async function() {
       const canvas = document.createElement('canvas');
-      
-      // Nếu là ảnh gia đình thì cho phép kích thước lớn hơn một chút
       let targetWidth = (id === 'familyPhoto') ? 500 : 180; 
       let width = img.width; let height = img.height;
-      
-      if (width > targetWidth) { 
-        height = Math.round((height * targetWidth) / width); 
-        width = targetWidth; 
-      }
-      
+      if (width > targetWidth) { height = Math.round((height * targetWidth) / width); width = targetWidth; }
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-      
-      // Ép chất lượng nén JPEG xuống 50% để chuỗi ký tự siêu nhẹ, mượt mà đẩy lên đám mây
       const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.5);
       
       document.getElementById(id).src = optimizedBase64;
       avatarsData[id] = optimizedBase64;
-      
-      // Đẩy dữ liệu đồng bộ mượt mà lên Google Sheets
       await cloudPush();
     }; img.src = e.target.result;
   }; reader.readAsDataURL(file);
@@ -473,9 +458,7 @@ async function resetAllData() {
 }
 
 async function autoResetDailyTasks() {
-  // Lệnh kiểm tra phạt sang ngày chỉ được thực hiện sau khi người dùng chạm màn hình lần đầu
   if(!isAudioInitialized) return; 
-
   const today = new Date().toLocaleDateString('vi-VN');
   const lastReset = localStorage.getItem('lastResetDate');
   
@@ -496,7 +479,13 @@ async function autoResetDailyTasks() {
 }
 
 async function initSystem() {
-  await cloudFetch();
+  // Tải dữ liệu lần đầu có hiện màn hình chờ
+  await cloudFetchWithLoading();
+
+  // 🚀 ENGINE LIÊN TỤC ĐỒNG BỘ: Cứ mỗi 10 giây tự động kiểm tra dữ liệu mới từ Google Sheet chạy ngầm
+  setInterval(async () => {
+    await cloudFetchSilent();
+  }, 10000); 
 }
 initSystem();
 </script>
