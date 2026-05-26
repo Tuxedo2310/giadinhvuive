@@ -176,18 +176,17 @@
 <script>
 const CONFIG_DATABASE_URL = "https://script.google.com/macros/s/AKfycbz1mwg470fhqS1UtF8unQUpDlDoAamZDKkYo2OUaCieHPUpTlRq7s-IS3qvfnXEh_P2_w/exec";
 
-// 🎛️ THAY ĐỔI KHO ÂM THANH THEO ĐÚNG YÊU CẦU THỰC TẾ
-const soundSend = new Audio('https://actions.google.com/sounds/v1/ui/click_on_button.ogg');      // Tiếng con gửi báo hoàn thành (Tiếng chút nhẹ nhàng)
-const soundReceive = new Audio('https://actions.google.com/sounds/v1/ui/beep_short.ogg');        // Tiếng máy tính bố mẹ nhận thông báo việc mới ngầm
-const soundTing = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'); // Tiếng chuông Ting Ting khi bố mẹ bấm Duyệt việc
-const soundCoin = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg');  // Tiếng tiền vàng Kaching đổ vào túi con khi được duyệt ngầm
-const soundPenalty = new Audio('https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg');    // Tiếng còi phạt sang ngày
+// 🎛️ KHÓA ĐƯỜNG LINK MỚI: Dùng kho file WAV siêu ngắn của thư viện mã nguồn mở, không thể lặp chuông báo thức
+const soundSend = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-01.wav');     // Con báo xong việc -> Tiếng Pop nhẹ 0.1s
+const soundReceive = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-04.wav');  // Bố mẹ nhận việc -> Tiếng Click cơ học ngắn 0.1s
+const soundTing = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-12.wav');     // Bố mẹ bấm Duyệt -> Tiếng Ting thanh thót ngắn gọn
+const soundCoin = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-18.wav');     // Con được cộng điểm -> Tiếng Coin kaching ngắn gọn
+const soundPenalty = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-09.wav');  // Tiếng còi phạt ngắn khi sang ngày
 
 let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
 let isAudioInitialized = false;
 
-// Biến lưu độ dài mảng cũ để check xem có việc mới đổ về máy tính không
 let oldTasksCount = 0;
 let oldApprovedCount = 0;
 
@@ -205,7 +204,8 @@ function initAudioOnFirstTouch() {
 function playSound(audioObj) {
   if (!isAudioInitialized) return;
   audioObj.currentTime = 0;
-  audioObj.play().catch(e => console.log("Chờ tương tác"));
+  audioObj.loop = false; // Triệt tiêu lệnh lặp âm thanh tận gốc rễ
+  audioObj.play().catch(e => console.log("Chờ click mở khóa"));
 }
 
 function updateClock() {
@@ -223,7 +223,6 @@ function handleTemplateChange() {
 }
 handleTemplateChange();
 
-// HÀM TẢI DỮ LIỆU NGẦM VÀ TỰ ĐỘNG CẬP NHẬT BIẾN ĐỔI UI, PHÁT ÂM THANH NHẬN NGƯỢC LẠI
 async function cloudFetchSilent() {
   if(!CONFIG_DATABASE_URL) return;
   try {
@@ -231,17 +230,15 @@ async function cloudFetchSilent() {
     const cloudData = await res.json();
     if(cloudData && cloudData.initialized) {
       
-      // Kiểm tra âm thanh nhận trên máy tính: Nếu số lượng việc "Chờ duyệt" tăng lên -> Phát tiếng nhận tin nhắn
       let currentCompletedCount = (cloudData.tasks || []).filter(t => t.completed && !t.approved).length;
       if (currentCompletedCount > oldTasksCount) {
-        playSound(soundReceive); // Máy tính kêu báo nhận việc mới
+        playSound(soundReceive); 
       }
       oldTasksCount = currentCompletedCount;
 
-      // Kiểm tra âm thanh nhận trên điện thoại con: Nếu lịch sử duyệt tăng lên (Bố mẹ vừa duyệt xong) -> Phát tiếng Coin
       let currentHistoryCount = (cloudData.taskHistory || []).length;
       if (oldApprovedCount > 0 && currentHistoryCount > oldApprovedCount) {
-        playSound(soundCoin); // Điện thoại các con kêu Kaching nhận điểm
+        playSound(soundCoin); 
       }
       oldApprovedCount = currentHistoryCount;
 
@@ -256,8 +253,8 @@ async function cloudFetchSilent() {
       if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
       if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
     }
-  } catch(e) { console.error("Lỗi tải ngầm:", e); }
-  updateUIElements(); // Ép vẽ lại toàn bộ giao diện máy tính lập tức
+  } catch(e) { console.error("Lỗi tải:", e); }
+  updateUIElements(); 
 }
 
 async function cloudFetchWithLoading() {
@@ -276,7 +273,7 @@ async function cloudPush() {
   };
   try {
     await fetch(CONFIG_DATABASE_URL, { method: "POST", body: JSON.stringify(payload) });
-  } catch(e) { console.error("Lỗi đẩy dữ liệu:", e); }
+  } catch(e) { console.error("Lỗi đẩy:", e); }
   document.getElementById('loadingUi').classList.add('hidden');
   updateUIElements();
 }
@@ -313,7 +310,7 @@ function handleTaskPhoto(event, index) {
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
       tasks[index].proofImg = canvas.toDataURL('image/jpeg', 0.6);
       tasks[index].completed = true;
-      playSound(soundSend); // Kêu tiếng gửi tin nhắn đi trên điện thoại con
+      playSound(soundSend); 
       await cloudPush();
     }; img.src = e.target.result;
   }; reader.readAsDataURL(file);
@@ -322,7 +319,7 @@ function handleTaskPhoto(event, index) {
 async function completeTask(index) {
   if(tasks[index].completed || tasks[index].approved) return;
   tasks[index].completed = true; 
-  playSound(soundSend); // Kêu tiếng gửi tin nhắn đi trên điện thoại con
+  playSound(soundSend); 
   await cloudPush();
 }
 
@@ -333,7 +330,7 @@ async function approveTask(index) {
   if(tasks[index].assignedTo === 'sister') { sisterScore += tasks[index].points; } else { littleScore += tasks[index].points; }
   saveHistoryLocal(tasks[index], 'task');
   tasks.splice(index, 1); 
-  playSound(soundTing); // Kêu tiếng Ting phê duyệt trên máy tính bố mẹ
+  playSound(soundTing); 
   await cloudPush();
 }
 
@@ -505,7 +502,6 @@ async function autoResetDailyTasks() {
 }
 
 async function initSystem() {
-  // Lấy dữ liệu lần đầu, ghi nhận mốc số lượng ban đầu để làm căn cứ tính âm thanh nhảy ngầm
   if(!CONFIG_DATABASE_URL) return;
   document.getElementById('loadingUi').classList.remove('hidden');
   try {
@@ -527,7 +523,7 @@ async function initSystem() {
   document.getElementById('loadingUi').classList.add('hidden');
   updateUIElements();
 
-  // ENGINE ĐỒNG BỘ CHẠY NGẦM LIÊN TỤC: Cứ 10 giây tự động cập nhật cả UI lẫn Sound hai đầu
+  // ENGINE ĐỒNG BỘ 10 GIÂY KHÔNG ĐỔI
   setInterval(async () => {
     await cloudFetchSilent();
   }, 10000); 
