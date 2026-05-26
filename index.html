@@ -16,7 +16,7 @@
   </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-24 relative">
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-28 md:pb-24 relative">
 
 <div id="loadingUi" class="fixed inset-0 z-50 flex items-center justify-center loading-overlay hidden">
   <div class="bg-white p-5 rounded-2xl shadow-xl border border-slate-100 flex flex-col items-center gap-3">
@@ -28,7 +28,6 @@
 <div class="max-w-6xl mx-auto px-4 pt-6">
 
   <div class="relative overflow-hidden bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 text-white rounded-3xl shadow-xl mb-6 flex flex-col md:flex-row md:justify-between md:items-stretch min-h-[160px]">
-    
     <div class="p-6 md:p-8 flex flex-col justify-center relative z-10 flex-1">
       <h1 class="text-4xl font-black tracking-tight drop-shadow-md flex items-center gap-2">
         🌞 SUMMER TEAM FAMILY
@@ -55,14 +54,26 @@
     </div>
   </div>
 
-  <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md mb-6">
+  <div class="block md:hidden bg-white border border-slate-200 rounded-2xl p-1.5 flex justify-between items-center shadow-md mb-6 sticky top-2 z-40">
+    <button onclick="switchTab('tab-nhim')" id="btn-tab-nhim" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-pink-500 text-white shadow-sm">👧 Nhím</button>
+    <button onclick="switchTab('tab-soc')" id="btn-tab-soc" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500">👧 Sóc</button>
+    
+    <button onclick="switchTab('tab-admin')" id="btn-tab-admin" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500 relative">
+      👨‍👩‍👧 Duyệt
+      <span id="badgeCountMobile" class="absolute -top-1 right-2 bg-red-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center hidden animate-bounce">0</span>
+    </button>
+    
+    <button onclick="switchTab('tab-history')" id="btn-tab-history" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500">🏆 Lịch sử</button>
+  </div>
+
+  <div id="section-giao-viec" class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md mb-6 hidden md:block">
     <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">📋 Bố/Mẹ giao việc hôm nay</h3>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      <select id="assignPerson" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <select id="assignPerson" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none">
         <option value="sister">👧 Giao cho Nhím</option>
         <option value="little">👧 Giao cho Sóc</option>
       </select>
-      <select id="taskTemplate" onchange="handleTemplateChange()" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <select id="taskTemplate" onchange="handleTemplateChange()" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none">
         <option value="custom">✍️ Tự nhập việc khác...</option>
         <option value="🧹 Quét nhà|10">🧹 Quét nhà - 10 điểm</option>
         <option value="🍚 Nấu cơm|20">🍚 Nấu cơm - 20 điểm</option>
@@ -72,15 +83,16 @@
         <option value="📚 Dọn góc học tập|10">📚 Dọn góc học tập - 10 điểm</option>
       </select>
       <div id="customTaskWrapper" class="flex gap-2 col-span-1">
-        <input id="customTaskName" type="text" placeholder="Tên công việc..." class="w-2/3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <input id="customTaskPoints" type="number" placeholder="Điểm" class="w-1/3 bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <input id="customTaskName" type="text" placeholder="Tên công việc..." class="w-2/3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium focus:outline-none">
+        <input id="customTaskPoints" type="number" placeholder="Điểm" class="w-1/3 bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-bold text-center focus:outline-none">
       </div>
       <button onclick="addTask()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-sm rounded-xl py-3 shadow-md transition-all">➕ Giao việc</button>
     </div>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
-    <div class="bg-gradient-to-b from-pink-50/80 to-white border-2 border-pink-200 rounded-3xl card-shadow-pink p-6 text-center">
+    
+    <div id="box-nhim" class="bg-gradient-to-b from-pink-50/80 to-white border-2 border-pink-200 rounded-3xl card-shadow-pink p-6 text-center block">
       <div class="flex items-center justify-between mb-4">
         <span class="text-2xl font-black text-pink-600">👧 Nhím</span>
         <span class="text-xs bg-pink-500 text-white font-black px-3 py-1 rounded-full shadow-sm">Lớp 9</span>
@@ -97,9 +109,9 @@
       <div class="mt-5 pt-4 border-t border-pink-100 text-left text-xs bg-white/60 p-3 rounded-xl border border-pink-100/50"><div class="font-bold text-pink-700">📏 Mục tiêu: Tăng chiều cao</div></div>
     </div>
 
-    <div class="bg-gradient-to-b from-purple-50/80 to-white border-2 border-purple-200 rounded-3xl shadow-lg p-6 relative lg:sticky lg:top-4">
+    <div id="box-team" class="bg-gradient-to-b from-purple-50/80 to-white border-2 border-purple-200 rounded-3xl shadow-lg p-6 relative lg:sticky lg:top-4 hidden md:block">
       <div class="text-center mb-4">
-        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUY ĐIỂM CHUNG TEAM</span>
+        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUỸ ĐIỂM CHUNG TEAM</span>
         <div class="text-6xl font-black text-purple-700 tracking-tight mt-2.5" id="teamScore">0</div>
       </div>
       <details open class="group border border-purple-100 rounded-2xl overflow-hidden bg-white shadow-sm mb-3">
@@ -121,7 +133,7 @@
       <button onclick="secureResetAllData()" class="w-full border border-red-200 hover:bg-red-50 text-red-600 rounded-xl py-2 text-xs font-bold transition">🗑 Reset dữ liệu</button>
     </div>
 
-    <div class="bg-gradient-to-b from-sky-50/80 to-white border-2 border-sky-200 rounded-3xl card-shadow-blue p-6 text-center">
+    <div id="box-soc" class="bg-gradient-to-b from-sky-50/80 to-white border-2 border-sky-200 rounded-3xl card-shadow-blue p-6 text-center block">
       <div class="flex items-center justify-between mb-4">
         <span class="text-2xl font-black text-sky-600">👧 Sóc</span>
         <span class="text-xs bg-sky-500 text-white font-black px-3 py-1 rounded-full shadow-sm">Lớp 6</span>
@@ -139,20 +151,20 @@
     </div>
   </div>
 
-  <div id="rewardApprovalWrapper" class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 hidden shadow-sm">
+  <div id="rewardApprovalWrapper" class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 hidden shadow-sm relative">
     <h3 class="text-sm font-black text-amber-800 mb-2 flex items-center gap-1.5">🔔 Yêu cầu thương lượng đổi quà cần bố mẹ cấp phép:</h3>
     <div id="rewardApprovalList" class="space-y-2"></div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <div class="bg-white border-2 border-pink-100 rounded-2xl p-5 shadow-sm">
+  <div id="section-nhiem-vu" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div id="area-task-nhim" class="bg-white border-2 border-pink-100 rounded-2xl p-5 shadow-sm block">
       <h2 class="text-lg font-black text-pink-600 mb-4 flex items-center justify-between border-b border-pink-50 pb-2">
         <span>📌 Việc cần làm của Nhím</span>
         <span id="nhimTaskCount" class="text-xs bg-pink-500 text-white px-2.5 py-0.5 rounded-full font-black">0</span>
       </h2>
       <div id="nhimTaskList" class="space-y-3"></div>
     </div>
-    <div class="bg-white border-2 border-sky-100 rounded-2xl p-5 shadow-sm">
+    <div id="area-task-soc" class="bg-white border-2 border-sky-100 rounded-2xl p-5 shadow-sm block">
       <h2 class="text-lg font-black text-sky-600 mb-4 flex items-center justify-between border-b border-sky-50 pb-2">
         <span>📌 Việc cần làm của Sóc</span>
         <span id="socTaskCount" class="text-xs bg-sky-500 text-white px-2.5 py-0.5 rounded-full font-black">0</span>
@@ -161,7 +173,7 @@
     </div>
   </div>
 
-  <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md">
+  <div id="section-history" class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md block">
     <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">🏆 Lịch sử hoàn thành & Kỷ luật ngày hè</h2>
     <div id="historyContainer" class="max-h-60 overflow-y-auto pr-1 space-y-2.5">
       <div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào được ghi nhận.</div>
@@ -179,11 +191,11 @@
 <script>
 const CONFIG_DATABASE_URL = "https://script.google.com/macros/s/AKfycbz1mwg470fhqS1UtF8unQUpDlDoAamZDKkYo2OUaCieHPUpTlRq7s-IS3qvfnXEh_P2_w/exec";
 
-// MẬT MÃ QUẢN TRỊ CỦA BỐ
 const ADMIN_PASSWORD_PIN = "1979";
 
 let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
+let activeTabMobile = "tab-nhim"; // Mặc định mở tab Nhím trên di động
 
 function updateClock() {
   const now = new Date();
@@ -207,7 +219,70 @@ function verifyAdminIdentity() {
   return false;
 }
 
-// Hàm fetch ngầm và gán chuẩn xác ảnh đại diện từ mây đè vào giao diện trực quan
+// 🕹️ HÀM CHUYỂN TAB ỨNG DỤNG LINH HOẠT TRÊN DI ĐỘNG
+function switchTab(tabId) {
+  if (window.innerWidth >= 768) return; // Nếu màn hình máy tính thì không chạy bộ lọc tab
+  activeTabMobile = tabId;
+  
+  // Reset trạng thái active của tất cả các nút tab
+  const tabs = ['tab-nhim', 'tab-soc', 'tab-admin', 'tab-history'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`btn-${t}`);
+    btn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500 relative";
+  });
+
+  // Gán màu nổi bật cho tab đang chọn
+  const activeBtn = document.getElementById(`btn-${tabId}`);
+  if(tabId === 'tab-nhim') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-pink-500 text-white shadow-sm";
+  if(tabId === 'tab-soc') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-sky-500 text-white shadow-sm";
+  if(tabId === 'tab-admin') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-purple-600 text-white shadow-sm relative";
+  if(tabId === 'tab-history') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-slate-800 text-white shadow-sm";
+
+  // Ẩn / Hiện các khối giao diện tương ứng
+  document.getElementById('box-nhim').style.display = (tabId === 'tab-nhim') ? 'block' : 'none';
+  document.getElementById('area-task-nhim').style.display = (tabId === 'tab-nhim') ? 'block' : 'none';
+  
+  document.getElementById('box-soc').style.display = (tabId === 'tab-soc') ? 'block' : 'none';
+  document.getElementById('area-task-soc').style.display = (tabId === 'tab-soc') ? 'block' : 'none';
+
+  document.getElementById('section-giao-viec').style.display = (tabId === 'tab-admin') ? 'block' : 'none';
+  document.getElementById('box-team').style.display = (tabId === 'tab-admin') ? 'block' : 'none';
+  document.getElementById('rewardApprovalWrapper').style.setProperty('display', (tabId === 'tab-admin' && pendingRewards.length > 0) ? 'block' : 'none', 'important');
+
+  document.getElementById('section-history').style.display = (tabId === 'tab-history') ? 'block' : 'none';
+  
+  // Phân chia khối nhiệm vụ khi ở tab Admin để hiển thị toàn bộ việc chờ duyệt
+  if (tabId === 'tab-admin') {
+    document.getElementById('section-nhiem-vu').style.display = 'grid';
+    document.getElementById('area-task-nhim').style.display = 'block';
+    document.getElementById('area-task-soc').style.display = 'block';
+  } else if (tabId !== 'tab-nhim' && tabId !== 'tab-soc') {
+    document.getElementById('section-nhiem-vu').style.display = 'none';
+  } else {
+    document.getElementById('section-nhiem-vu').style.display = 'block';
+  }
+}
+
+// Khởi chạy kiểm tra kích thước màn hình để tự động cấu hình giao diện
+function checkResponsiveLayout() {
+  if (window.innerWidth >= 768) {
+    // Trên máy tính: Hiện tất cả mọi khối
+    document.getElementById('box-nhim').style.display = 'block';
+    document.getElementById('area-task-nhim').style.display = 'block';
+    document.getElementById('box-soc').style.display = 'block';
+    document.getElementById('area-task-soc').style.display = 'block';
+    document.getElementById('box-team').style.display = 'block';
+    document.getElementById('section-giao-viec').style.display = 'block';
+    document.getElementById('section-nhiem-vu').style.display = 'grid';
+    document.getElementById('section-history').style.display = 'block';
+    if(pendingRewards.length > 0) document.getElementById('rewardApprovalWrapper').style.setProperty('display', 'block', 'important');
+  } else {
+    // Trên điện thoại: Đưa về tab đang chọn
+    switchTab(activeTabMobile);
+  }
+}
+window.addEventListener('resize', checkResponsiveLayout);
+
 async function cloudFetchSilent() {
   if(!CONFIG_DATABASE_URL) return;
   try {
@@ -221,15 +296,9 @@ async function cloudFetchSilent() {
       taskHistory = cloudData.taskHistory || [];
       avatarsData = cloudData.avatarsData || { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
       
-      // ĐỒNG BỘ ẢNH AVATAR THỜI GIAN THỰC TỪ CLOUD LÊN GIAO DIỆN CÁC MÁY KHÁC
-      if(avatarsData.nhimAvatar) { document.getElementById('nhimAvatar').src = avatarsData.nhimAvatar; }
-      else { document.getElementById('nhimAvatar').src = 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png'; }
-      
-      if(avatarsData.socAvatar) { document.getElementById('socAvatar').src = avatarsData.socAvatar; }
-      else { document.getElementById('socAvatar').src = 'https://cdn-icons-png.flaticon.com/512/4140/4140051.png'; }
-      
-      if(avatarsData.familyPhoto) { document.getElementById('familyPhoto').src = avatarsData.familyPhoto; }
-      else { document.getElementById('familyPhoto').src = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=600&auto=format&fit=crop'; }
+      if(avatarsData.nhimAvatar) document.getElementById('nhimAvatar').src = avatarsData.nhimAvatar;
+      if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
+      if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
     }
   } catch(e) { console.error("Lỗi tải ngầm:", e); }
   updateUIElements(); 
@@ -260,7 +329,22 @@ function updateUIElements() {
   document.getElementById('sisterScore').innerText = sisterScore;
   document.getElementById('littleScore').innerText = littleScore;
   document.getElementById('teamScore').innerText = sisterScore + littleScore;
+  
+  // 🔴 TÍNH TOÁN SỐ LƯỢNG TIN NHẮN THÔNG BÁO CHỜ DUYỆT (Việc con báo xong + Quà chờ cấp phép)
+  let countTasksWaiting = tasks.filter(t => t.completed && !t.approved).length;
+  let countRewardsWaiting = pendingRewards.length;
+  let totalWaiting = countTasksWaiting + countRewardsWaiting;
+
+  const badgeMobile = document.getElementById('badgeCountMobile');
+  if (totalWaiting > 0) {
+    badgeMobile.innerText = totalWaiting;
+    badgeMobile.classList.remove('hidden');
+  } else {
+    badgeMobile.classList.add('hidden');
+  }
+
   renderTasks(); renderPendingRewards(); renderHistory();
+  checkResponsiveLayout(); // Đảm bảo cấu hình ẩn hiện khối chuẩn xác theo mảng dữ liệu mới nhận
 }
 
 async function addTask() {
@@ -275,7 +359,6 @@ async function addTask() {
   tasks.push({ name: taskName, points: taskPoints, assignedTo: assignedTo, completed: false, approved: false, proofImg: null });
   document.getElementById('customTaskName').value = ""; document.getElementById('customTaskPoints').value = "";
   
-  // FIX LỖI TRỄ HIỂN THỊ: Ép UI hiển thị nhiệm vụ mới ngay lập tức trên máy vừa giao việc
   updateUIElements();
   await cloudPush();
 }
@@ -423,17 +506,16 @@ function renderHistory() {
   }).join('');
 }
 
-// 🔐 KHÓA MÃ PIN TOÀN DIỆN: Đã b bịt tất cả các lối tự ý đổi ảnh của con
 function secureLoadAvatar(id) {
-  if (!verifyAdminIdentity()) return; // Con không có mật mã sẽ bị chặn lại ngay từ bước này
+  if (!verifyAdminIdentity()) return; 
   
   const fileInput = document.getElementById('secureImageInput');
   fileInput.onchange = function(event) {
     const file = event.target.files[0]; if(!file) return;
     const reader = new FileReader();
-    reader.onload = async function(e) {
+    reader.onload = function (e) {
       const img = new Image();
-      img.onload = async function() {
+      img.onload = async function () {
         const canvas = document.createElement('canvas');
         let targetWidth = (id === 'familyPhoto') ? 550 : 180; 
         let width = img.width; let height = img.height;
@@ -441,9 +523,7 @@ function secureLoadAvatar(id) {
         canvas.width = width; canvas.height = height;
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
         
-        // Nén chất lượng JPEG xuống 50% để chuỗi ký tự gọn nhẹ, đồng bộ mây cực nhanh giữa các máy
         const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.5);
-        
         document.getElementById(id).src = optimizedBase64;
         avatarsData[id] = optimizedBase64;
         await cloudPush();
@@ -494,7 +574,7 @@ async function initSystem() {
   await cloudFetchWithLoading();
   await autoResetDailyTasks();
 
-  // ENGINE ĐỒNG BỘ CHẠY NGẦM 10 GIÂY LIÊN TỤC GIỮA CÁC THIẾT BỊ
+  // ENGINE ĐỒNG BỘ 10 GIÂY LIÊN TỤC
   setInterval(async () => {
     await cloudFetchSilent();
   }, 10000); 
