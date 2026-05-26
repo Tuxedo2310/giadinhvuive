@@ -176,20 +176,27 @@
 <script>
 const CONFIG_DATABASE_URL = "https://script.google.com/macros/s/AKfycbz1mwg470fhqS1UtF8unQUpDlDoAamZDKkYo2OUaCieHPUpTlRq7s-IS3qvfnXEh_P2_w/exec";
 
-const soundClick = new Audio('https://actions.google.com/sounds/v1/ui/click_on_button.ogg'); 
-const soundApprove = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'); 
-const soundReward = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg'); 
-const soundPenalty = new Audio('https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg');
+// 🎛️ THAY ĐỔI KHO ÂM THANH THEO ĐÚNG YÊU CẦU THỰC TẾ
+const soundSend = new Audio('https://actions.google.com/sounds/v1/ui/click_on_button.ogg');      // Tiếng con gửi báo hoàn thành (Tiếng chút nhẹ nhàng)
+const soundReceive = new Audio('https://actions.google.com/sounds/v1/ui/beep_short.ogg');        // Tiếng máy tính bố mẹ nhận thông báo việc mới ngầm
+const soundTing = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'); // Tiếng chuông Ting Ting khi bố mẹ bấm Duyệt việc
+const soundCoin = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg');  // Tiếng tiền vàng Kaching đổ vào túi con khi được duyệt ngầm
+const soundPenalty = new Audio('https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg');    // Tiếng còi phạt sang ngày
 
 let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
 let isAudioInitialized = false;
 
+// Biến lưu độ dài mảng cũ để check xem có việc mới đổ về máy tính không
+let oldTasksCount = 0;
+let oldApprovedCount = 0;
+
 function initAudioOnFirstTouch() {
   if (isAudioInitialized) return;
-  soundClick.play().then(() => soundClick.pause()).catch(() => {});
-  soundApprove.play().then(() => soundApprove.pause()).catch(() => {});
-  soundReward.play().then(() => soundReward.pause()).catch(() => {});
+  soundSend.play().then(() => soundSend.pause()).catch(() => {});
+  soundReceive.play().then(() => soundReceive.pause()).catch(() => {});
+  soundTing.play().then(() => soundTing.pause()).catch(() => {});
+  soundCoin.play().then(() => soundCoin.pause()).catch(() => {});
   soundPenalty.play().then(() => soundPenalty.pause()).catch(() => {});
   isAudioInitialized = true;
   autoResetDailyTasks();
@@ -198,7 +205,7 @@ function initAudioOnFirstTouch() {
 function playSound(audioObj) {
   if (!isAudioInitialized) return;
   audioObj.currentTime = 0;
-  audioObj.play().catch(e => console.log("Lỗi âm thanh:", e));
+  audioObj.play().catch(e => console.log("Chờ tương tác"));
 }
 
 function updateClock() {
@@ -216,13 +223,28 @@ function handleTemplateChange() {
 }
 handleTemplateChange();
 
-// cloudFetchSilent: Hàm tải dữ liệu chạy ngầm, không hiện màn hình Loading che mắt các con
+// HÀM TẢI DỮ LIỆU NGẦM VÀ TỰ ĐỘNG CẬP NHẬT BIẾN ĐỔI UI, PHÁT ÂM THANH NHẬN NGƯỢC LẠI
 async function cloudFetchSilent() {
   if(!CONFIG_DATABASE_URL) return;
   try {
     const res = await fetch(CONFIG_DATABASE_URL);
     const cloudData = await res.json();
     if(cloudData && cloudData.initialized) {
+      
+      // Kiểm tra âm thanh nhận trên máy tính: Nếu số lượng việc "Chờ duyệt" tăng lên -> Phát tiếng nhận tin nhắn
+      let currentCompletedCount = (cloudData.tasks || []).filter(t => t.completed && !t.approved).length;
+      if (currentCompletedCount > oldTasksCount) {
+        playSound(soundReceive); // Máy tính kêu báo nhận việc mới
+      }
+      oldTasksCount = currentCompletedCount;
+
+      // Kiểm tra âm thanh nhận trên điện thoại con: Nếu lịch sử duyệt tăng lên (Bố mẹ vừa duyệt xong) -> Phát tiếng Coin
+      let currentHistoryCount = (cloudData.taskHistory || []).length;
+      if (oldApprovedCount > 0 && currentHistoryCount > oldApprovedCount) {
+        playSound(soundCoin); // Điện thoại các con kêu Kaching nhận điểm
+      }
+      oldApprovedCount = currentHistoryCount;
+
       sisterScore = cloudData.sisterScore || 0;
       littleScore = cloudData.littleScore || 0;
       tasks = cloudData.tasks || [];
@@ -234,11 +256,10 @@ async function cloudFetchSilent() {
       if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
       if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
     }
-  } catch(e) { console.error("Lỗi tải ngầm đám mây:", e); }
-  updateUIElements();
+  } catch(e) { console.error("Lỗi tải ngầm:", e); }
+  updateUIElements(); // Ép vẽ lại toàn bộ giao diện máy tính lập tức
 }
 
-// Giữ nguyên hàm cloudFetch có loading khi chạy mở trang lần đầu
 async function cloudFetchWithLoading() {
   if(!CONFIG_DATABASE_URL) return;
   document.getElementById('loadingUi').classList.remove('hidden');
@@ -255,7 +276,7 @@ async function cloudPush() {
   };
   try {
     await fetch(CONFIG_DATABASE_URL, { method: "POST", body: JSON.stringify(payload) });
-  } catch(e) { console.error("Lỗi đẩy đám mây:", e); }
+  } catch(e) { console.error("Lỗi đẩy dữ liệu:", e); }
   document.getElementById('loadingUi').classList.add('hidden');
   updateUIElements();
 }
@@ -292,14 +313,17 @@ function handleTaskPhoto(event, index) {
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
       tasks[index].proofImg = canvas.toDataURL('image/jpeg', 0.6);
       tasks[index].completed = true;
-      playSound(soundClick); await cloudPush();
+      playSound(soundSend); // Kêu tiếng gửi tin nhắn đi trên điện thoại con
+      await cloudPush();
     }; img.src = e.target.result;
   }; reader.readAsDataURL(file);
 }
 
 async function completeTask(index) {
   if(tasks[index].completed || tasks[index].approved) return;
-  tasks[index].completed = true; playSound(soundClick); await cloudPush();
+  tasks[index].completed = true; 
+  playSound(soundSend); // Kêu tiếng gửi tin nhắn đi trên điện thoại con
+  await cloudPush();
 }
 
 async function approveTask(index) {
@@ -308,7 +332,9 @@ async function approveTask(index) {
   tasks[index].approved = true;
   if(tasks[index].assignedTo === 'sister') { sisterScore += tasks[index].points; } else { littleScore += tasks[index].points; }
   saveHistoryLocal(tasks[index], 'task');
-  tasks.splice(index, 1); playSound(soundApprove); await cloudPush();
+  tasks.splice(index, 1); 
+  playSound(soundTing); // Kêu tiếng Ting phê duyệt trên máy tính bố mẹ
+  await cloudPush();
 }
 
 function renderTasks() {
@@ -342,7 +368,7 @@ async function redeemReward(points, rewardName) {
   const total = sisterScore + littleScore; if(total < points) { alert('❌ Điểm tích lũy của Team hiện tại không đủ!'); return; }
   if(!confirm(`Xác nhận dùng ${points} điểm của Team để đổi ngay phần quà [${rewardName}]?`)) return;
   executeScoreDeduction(points); saveHistoryLocal({ name: rewardName, points: points }, 'reward');
-  playSound(soundReward); await cloudPush(); alert('🎉 Đổi quà thành công!');
+  playSound(soundTing); await cloudPush(); alert('🎉 Đổi quà thành công!');
 }
 
 function executeScoreDeduction(points) {
@@ -358,7 +384,7 @@ async function requestCustomReward() {
   if(!name || points <= 0) { alert('⚠️ Hãy điền đầy đủ thông tin!'); return; }
   pendingRewards.push({ name: name, points: points });
   document.getElementById('customRewardName').value = ""; document.getElementById('customRewardPoints').value = "";
-  await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
+  playSound(soundSend); await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
 }
 
 function renderPendingRewards() {
@@ -379,7 +405,7 @@ async function approveCustomReward(index) {
   const reward = pendingRewards[index]; const total = sisterScore + littleScore;
   if (total < reward.points) { alert('❌ Điểm hiện tại không đủ!'); return; }
   executeScoreDeduction(reward.points); saveHistoryLocal({ name: `🤝 Thương lượng: ${reward.name}`, points: reward.points }, 'reward');
-  pendingRewards.splice(index, 1); playSound(soundReward); await cloudPush();
+  pendingRewards.splice(index, 1); playSound(soundTing); await cloudPush();
 }
 
 async function rejectCustomReward(index) {
@@ -426,7 +452,7 @@ function loadAvatar(event, id) {
     const img = new Image();
     img.onload = async function() {
       const canvas = document.createElement('canvas');
-      let targetWidth = (id === 'familyPhoto') ? 500 : 180; 
+      let targetWidth = (id === 'familyPhoto') ? 550 : 180; 
       let width = img.width; let height = img.height;
       if (width > targetWidth) { height = Math.round((height * targetWidth) / width); width = targetWidth; }
       canvas.width = width; canvas.height = height;
@@ -479,10 +505,29 @@ async function autoResetDailyTasks() {
 }
 
 async function initSystem() {
-  // Tải dữ liệu lần đầu có hiện màn hình chờ
-  await cloudFetchWithLoading();
+  // Lấy dữ liệu lần đầu, ghi nhận mốc số lượng ban đầu để làm căn cứ tính âm thanh nhảy ngầm
+  if(!CONFIG_DATABASE_URL) return;
+  document.getElementById('loadingUi').classList.remove('hidden');
+  try {
+    const res = await fetch(CONFIG_DATABASE_URL);
+    const cloudData = await res.json();
+    if(cloudData && cloudData.initialized) {
+      sisterScore = cloudData.sisterScore || 0; littleScore = cloudData.littleScore || 0;
+      tasks = cloudData.tasks || []; pendingRewards = cloudData.pendingRewards || [];
+      taskHistory = cloudData.taskHistory || []; avatarsData = cloudData.avatarsData || {};
+      
+      oldTasksCount = tasks.filter(t => t.completed && !t.approved).length;
+      oldApprovedCount = taskHistory.length;
 
-  // 🚀 ENGINE LIÊN TỤC ĐỒNG BỘ: Cứ mỗi 10 giây tự động kiểm tra dữ liệu mới từ Google Sheet chạy ngầm
+      if(avatarsData.nhimAvatar) document.getElementById('nhimAvatar').src = avatarsData.nhimAvatar;
+      if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
+      if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
+    }
+  } catch(e) { console.log(e); }
+  document.getElementById('loadingUi').classList.add('hidden');
+  updateUIElements();
+
+  // ENGINE ĐỒNG BỘ CHẠY NGẦM LIÊN TỤC: Cứ 10 giây tự động cập nhật cả UI lẫn Sound hai đầu
   setInterval(async () => {
     await cloudFetchSilent();
   }, 10000); 
