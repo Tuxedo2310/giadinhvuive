@@ -20,7 +20,7 @@
   </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-28 md:pb-24 relative" onclick="initAudioOnFirstTouch()">
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-28 md:pb-24 relative">
 
 <div id="loginGateUi" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-4">
   <div class="bg-white/10 backdrop-blur-xl border border-white/20 p-6 md:p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center text-white">
@@ -67,7 +67,7 @@
   </div>
 
   <div class="block md:hidden bg-white border border-slate-200 rounded-2xl p-1.5 flex justify-between items-center shadow-md mb-6 sticky top-2 z-40">
-    <button onclick="switchTab('tab-nhim')" id="btn-tab-nhim" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all relative text-slate-500">
+    <button onclick="switchTab('tab-nhim')" id="btn-tab-nhim" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all relative bg-pink-500 text-white shadow-sm">
       Nhím <span id="badgeNhimMobile" class="absolute -top-1 -right-0.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center hidden">0</span>
     </button>
     <button onclick="switchTab('tab-soc')" id="btn-tab-soc" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all relative text-slate-500">
@@ -124,10 +124,11 @@
 
     <div id="box-team" class="bg-gradient-to-b from-purple-50/80 to-white border-2 border-purple-200 rounded-3xl shadow-lg p-6 relative lg:sticky lg:top-4 hidden md:block">
       <div class="text-center mb-4">
-        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUỸ ĐIỂM CHUNG TEAM</span>
+        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUY ĐIỂM CHUNG TEAM</span>
         <div class="text-6xl font-black text-purple-700 tracking-tight mt-2.5" id="teamScore">0</div>
       </div>
-      <details open class="group border border-purple-100 rounded-2xl overflow-hidden bg-white shadow-sm mb-3">
+      
+      <details class="group border border-purple-100 rounded-2xl overflow-hidden bg-white shadow-sm mb-3">
         <summary class="list-none cursor-pointer p-4 font-extrabold text-sm text-purple-900 flex justify-between items-center bg-purple-50 border-b border-purple-100 select-none">🎁 Kho phần thưởng muốn đổi <span class="transition-transform group-open:rotate-180 text-purple-500 text-xs">▼</span></summary>
         <div class="p-2 space-y-1.5 max-h-72 overflow-y-auto bg-slate-50/40">
           <button onclick="requestReward(50, '📱 Dùng thêm 30 phút điện thoại')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
@@ -216,7 +217,6 @@ const ADMIN_PASSWORD_PIN = "abcd";   // Mật mã phê duyệt/duyệt việc c�
 let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
 let activeTabMobile = "tab-nhim"; 
-let isAudioInitialized = false;
 
 // 🔒 LOGIC KIỂM TRA MẬT KHẨU ĐẦU VÀO CỦA ỨNG DỤNG
 function checkAppLogin() {
@@ -234,24 +234,6 @@ function checkAppLogin() {
 document.getElementById('appPasswordInput').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') checkAppLogin();
 });
-
-const soundClick = new Audio('https://signalsmith-audio.co.uk/images/blog/percussion/guiro.wav'); 
-const soundApprove = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'); 
-const soundReward = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg'); 
-const soundPenalty = new Audio('https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg');
-
-function playSound(audioObj) {
-  try { if(isAudioInitialized) { audioObj.currentTime = 0; audioObj.play().catch(e => {}); } } catch(e) {}
-}
-
-function initAudioOnFirstTouch() {
-  if (isAudioInitialized) return;
-  soundClick.play().then(() => soundClick.pause()).catch(e => {});
-  soundApprove.play().then(() => soundApprove.pause()).catch(e => {});
-  soundReward.play().then(() => soundReward.pause()).catch(e => {});
-  soundPenalty.play().then(() => soundPenalty.pause()).catch(e => {});
-  isAudioInitialized = true;
-}
 
 function updateClock() {
   const now = new Date();
@@ -400,14 +382,14 @@ function handleTaskPhoto(event, index) {
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
       tasks[index].proofImg = canvas.toDataURL('image/jpeg', 0.6);
-      tasks[index].completed = true; playSound(soundClick); await cloudPush();
+      tasks[index].completed = true; await cloudPush();
     }; img.src = e.target.result;
   }; reader.readAsDataURL(file);
 }
 
 async function completeTask(index) {
   if(tasks[index].completed || tasks[index].approved) return;
-  tasks[index].completed = true; playSound(soundClick); await cloudPush();
+  tasks[index].completed = true; await cloudPush();
 }
 
 async function approveTask(index) {
@@ -416,7 +398,7 @@ async function approveTask(index) {
   if (!verifyAdminIdentity()) return;
   tasks[index].approved = true;
   if(tasks[index].assignedTo === 'sister') { sisterScore += tasks[index].points; } else { littleScore += tasks[index].points; }
-  saveHistoryLocal(tasks[index], 'task'); tasks.splice(index, 1); playSound(soundApprove); await cloudPush();
+  saveHistoryLocal(tasks[index], 'task'); tasks.splice(index, 1); await cloudPush();
 }
 
 function renderTasks() {
@@ -475,7 +457,7 @@ async function approveCustomReward(index) {
   if (total < reward.points) { alert('❌ Điểm quỹ chung hiện không đủ!'); return; }
   if (!verifyAdminIdentity()) return;
   executeScoreDeduction(reward.points); saveHistoryLocal({ name: reward.name, points: reward.points }, 'reward');
-  pendingRewards.splice(index, 1); playSound(soundReward); await cloudPush();
+  pendingRewards.splice(index, 1); await cloudPush();
 }
 
 async function rejectCustomReward(index) {
@@ -558,15 +540,13 @@ async function secureResetAllData() {
 async function autoResetDailyTasks() {
   const today = new Date().toLocaleDateString('vi-VN'); const lastReset = localStorage.getItem('lastResetDate');
   if(lastReset && lastReset !== today) {
-    let playedSound = false;
     tasks.forEach(task => {
       if(!task.completed && !task.approved) {
         if(task.assignedTo === 'sister') { sisterScore = Math.max(0, sisterScore - task.points); } 
         else { littleScore = Math.max(0, littleScore - task.points); }
-        saveHistoryLocal({ name: task.name, points: task.points, assignedTo: task.assignedTo }, 'penalty'); playedSound = true;
+        saveHistoryLocal({ name: task.name, points: task.points, assignedTo: task.assignedTo }, 'penalty');
       }
     });
-    if(playedSound) playSound(soundPenalty);
     tasks = []; localStorage.setItem('lastResetDate', today); await cloudPush();
   } else if (!lastReset) { localStorage.setItem('lastResetDate', today); }
 }
@@ -574,11 +554,8 @@ async function autoResetDailyTasks() {
 async function initSystem() {
   await cloudFetchWithLoading();
   await autoResetDailyTasks();
-  
-  // 🕹️ ĐÂY LÀ ĐOẠN SỬA LỖI: Buộc hệ thống tính toán lại layout và kích hoạt tab ban đầu cho di động
   activeTabMobile = "tab-nhim";
   checkResponsiveLayout();
-  
   setInterval(async () => { await cloudFetchSilent(); }, 10000); 
 }
 </script>
