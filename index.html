@@ -4,38 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Summer Team Family</title>
-  
-  <link rel="icon" type="image/jpeg" sizes="180x180" href="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=180&h=180&fit=crop">
-  <link rel="icon" type="image/jpeg" sizes="192x192" href="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=192&h=192&fit=crop">
-  <link rel="icon" type="image/jpeg" sizes="512x512" href="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=512&h=512&fit=crop">
-  <link rel="apple-touch-icon" sizes="180x180" href="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=180&h=180&fit=crop">
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .card-shadow-pink { box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.1), 0 8px 10px -6px rgba(244, 63, 94, 0.1); }
     .card-shadow-blue { box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.1), 0 8px 10px -6px rgba(14, 165, 233, 0.1); }
-    @keyframes pulse-danger {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
+    @keyframes pulse-danger { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     .animate-pulse-danger { animation: pulse-danger 2s infinite; }
+    .loading-overlay { background: rgba(255,255,255,0.7); backdrop-filter: blur(4px); }
   </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-24" onclick="initAudioOnFirstTouch()">
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-28 md:pb-24 relative">
+
+<div id="loadingUi" class="fixed inset-0 z-50 flex items-center justify-center loading-overlay hidden">
+  <div class="bg-white p-5 rounded-2xl shadow-xl border border-slate-100 flex flex-col items-center gap-3">
+    <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+    <p class="text-xs font-bold text-slate-600">Đang đồng bộ dữ liệu đám mây...</p>
+  </div>
+</div>
 
 <div class="max-w-6xl mx-auto px-4 pt-6">
 
   <div class="relative overflow-hidden bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 text-white rounded-3xl shadow-xl mb-6 flex flex-col md:flex-row md:justify-between md:items-stretch min-h-[160px]">
-    
     <div class="p-6 md:p-8 flex flex-col justify-center relative z-10 flex-1">
       <h1 class="text-4xl font-black tracking-tight drop-shadow-md flex items-center gap-2">
         🌞 SUMMER TEAM FAMILY
       </h1>
       <p class="text-white/90 text-sm font-semibold mt-1.5 drop-shadow-sm">✨ Bảng quản lý mục tiêu và hoạt động mùa hè cho Nhím và Sóc</p>
-      
+
       <div class="mt-4 inline-flex items-center bg-slate-950/30 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-2xl w-fit">
         <span class="text-xs font-black uppercase tracking-wider text-yellow-300 mr-2">📅</span>
         <div id="clock" class="font-black text-base text-cyan-300 tracking-wide"></div>
@@ -43,250 +41,199 @@
     </div>
 
     <div class="relative md:w-80 shrink-0 border-t-2 md:border-t-0 md:border-l-2 border-white/20 overflow-hidden group min-h-[140px] md:min-h-full">
-      <img id="familyPhoto" src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=600&auto=format&fit=crop" 
-           class="w-full h-full object-cover transition duration-500 group-hover:scale-105 cursor-pointer" onclick="viewAvatar('familyPhoto')"/>
-      
+      <img id="familyPhoto" src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105 cursor-pointer" onclick="viewAvatar('familyPhoto')"/>
       <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8 flex items-end justify-between pointer-events-none">
         <div class="text-left">
           <div class="font-black text-xs text-yellow-300 tracking-wide">FAMILY GOAL</div>
           <div class="text-[10px] text-white/90 font-medium">Chăm ngoan • Tự lập • Vận động</div>
         </div>
       </div>
-
-      <label class="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-900 text-white px-2 py-1 rounded-md text-[10px] font-bold cursor-pointer transition shadow-md">
-        📷 Đổi ảnh gia đình <input type="file" hidden accept="image/*" onchange="loadAvatar(event, 'familyPhoto')">
-      </label>
-    </div>
-  </div>
-
-  <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md mb-6">
-    <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">📋 Bố/Mẹ giao việc hôm nay</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      <select id="assignPerson" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <option value="sister">👧 Giao cho Nhím</option>
-        <option value="little">👧 Giao cho Sóc</option>
-      </select>
-
-      <select id="taskTemplate" onchange="handleTemplateChange()" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <option value="custom">✍️ Tự nhập việc khác...</option>
-        <option value="🧹 Quét nhà|10">🧹 Quét nhà - 10 điểm</option>
-        <option value="🍚 Nấu cơm|20">🍚 Nấu cơm - 20 điểm</option>
-        <option value="🍽️ Rửa bát|15">🍽️ Rửa bát - 15 điểm</option>
-        <option value="👕 Gấp quần áo|10">👕 Gấp quần áo - 10 điểm</option>
-        <option value="🪴 Tưới cây|5">🪴 Tưới cây - 5 điểm</option>
-        <option value="📚 Dọn góc học tập|10">📚 Dọn góc học tập - 10 điểm</option>
-      </select>
-
-      <div id="customTaskWrapper" class="flex gap-2 col-span-1">
-        <input id="customTaskName" type="text" placeholder="Tên công việc..." class="w-2/3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <input id="customTaskPoints" type="number" placeholder="Điểm" class="w-1/3 bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      </div>
-
-      <button onclick="addTask()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-sm rounded-xl py-3 shadow-md transition-all">
-        ➕ Giao việc
+      <button onclick="secureLoadAvatar('familyPhoto')" class="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-900 text-white px-2 py-1 rounded-md text-[10px] font-bold transition shadow-md">
+        📷 Đổi ảnh gia đình
+        📷
       </button>
     </div>
   </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
-    <div class="bg-gradient-to-b from-pink-50/80 to-white border-2 border-pink-200 rounded-3xl card-shadow-pink p-6 text-center">
-      <div class="flex items-center justify-between mb-4">
-        <span class="text-2xl font-black text-pink-600">👧 Nhím</span>
-        <span class="text-xs bg-pink-500 text-white font-black px-3 py-1 rounded-full shadow-sm">Lớp 9</span>
-      </div>
-      <div class="relative group mx-auto w-28 h-28 mb-4">
-        <img id="nhimAvatar" src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" class="w-28 h-28 rounded-full object-cover border-4 border-pink-300 shadow-md" />
-        <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5">
-          <label class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold cursor-pointer">
-            📷 <input type="file" hidden accept="image/*" onchange="loadAvatar(event, 'nhimAvatar')">
-          </label>
-          <button onclick="removeAvatar('nhimAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
-        </div>
-      </div>
-      <div class="text-5xl font-black text-pink-600 tracking-tight" id="sisterScore">0</div>
-      <div class="text-xs text-pink-400 font-bold uppercase tracking-wider mt-1">Điểm tích lũy cá nhân</div>
-      <div class="mt-5 pt-4 border-t border-pink-100 text-left text-xs bg-white/60 p-3 rounded-xl border border-pink-100/50">
-        <div class="font-bold text-pink-700">📏 Mục tiêu: Tăng chiều cao</div>
-      </div>
-    </div>
-
-    <div class="bg-gradient-to-b from-purple-50/80 to-white border-2 border-purple-200 rounded-3xl shadow-lg p-6 relative lg:sticky lg:top-4">
-      <div class="text-center mb-4">
-        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUY ĐIỂM CHUNG TEAM</span>
-        <div class="text-6xl font-black text-purple-700 tracking-tight mt-2.5" id="teamScore">0</div>
-      </div>
-      
-      <details open class="group border border-purple-100 rounded-2xl overflow-hidden bg-white shadow-sm mb-3">
-        <summary class="list-none cursor-pointer p-4 font-extrabold text-sm text-purple-900 flex justify-between items-center bg-purple-50 border-b border-purple-100 select-none">
-          🎁 Đổi quà (Trừ điểm tự động) <span class="transition-transform group-open:rotate-180 text-purple-500 text-xs">▼</span>
-        </summary>
-        <div class="p-2 space-y-1.5 max-h-64 overflow-y-auto bg-slate-50/40">
-          <button onclick="redeemReward(50, '📱 Dùng thêm 30 phút điện thoại')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
-            <span>📱 Thêm 30p điện thoại</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">50 đ</span>
-          </button>
-          <button onclick="redeemReward(100, '🍔 Ăn món thích')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
-            <span>🍔 Ăn món yêu thích</span><span class="font-bold text-purple-600 bg-indigo-50 px-2 py-0.5 rounded-md">100 đ</span>
-          </button>
-          <button onclick="redeemReward(200, '🎬 Xem phim')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
-            <span>🎬 Xem phim giải trí</span><span class="font-bold text-purple-600 bg-indigo-50 px-2 py-0.5 rounded-md">200 đ</span>
-          </button>
-          
-          <div class="pt-3 border-t border-purple-100 space-y-1.5 bg-white p-2.5 rounded-xl border border-purple-100/50">
-            <div class="text-[11px] font-black text-purple-600 px-1">🤝 Gửi đề xuất quà thương lượng:</div>
-            <input id="customRewardName" type="text" placeholder="Tên món quà con ao ước..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:outline-none">
-            <div class="flex gap-1.5">
-              <input id="customRewardPoints" type="number" placeholder="Điểm đổi" class="w-1/2 bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-bold text-center focus:outline-none">
-              <button onclick="requestCustomReward()" class="w-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs rounded-lg p-2 shadow-sm">📢 Gửi bố mẹ</button>
-            </div>
-          </div>
-        </div>
-      </details>
-      <button onclick="resetAllData()" class="w-full border border-red-200 hover:bg-red-50 text-red-600 rounded-xl py-2 text-xs font-bold transition">🗑 Reset dữ liệu</button>
-    </div>
-
-    <div class="bg-gradient-to-b from-sky-50/80 to-white border-2 border-sky-200 rounded-3xl card-shadow-blue p-6 text-center">
-      <div class="flex items-center justify-between mb-4">
-        <span class="text-2xl font-black text-sky-600">👧 Sóc</span>
-        <span class="text-xs bg-sky-500 text-white font-black px-3 py-1 rounded-full shadow-sm">Lớp 6</span>
-      </div>
-      <div class="relative group mx-auto w-28 h-28 mb-4">
-        <img id="socAvatar" src="https://cdn-icons-png.flaticon.com/512/4140/4140051.png" class="w-28 h-28 rounded-full object-cover border-4 border-sky-300 shadow-md" />
-        <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5">
-          <label class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold cursor-pointer">
-            📷 <input type="file" hidden accept="image/*" onchange="loadAvatar(event, 'socAvatar')">
-          </label>
-          <button onclick="removeAvatar('socAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
-        </div>
-      </div>
-      <div class="text-5xl font-black text-sky-600 tracking-tight" id="littleScore">0</div>
-      <div class="text-xs text-sky-400 font-bold uppercase tracking-wider mt-1">Điểm tích lũy cá nhân</div>
-      <div class="mt-5 pt-4 border-t border-sky-100 text-left text-xs bg-white/60 p-3 rounded-xl border border-sky-100/50">
-        <div class="font-bold text-sky-700">🌱 Tiêu chí: Học tập • Tự lập • Vận động</div>
-      </div>
-    </div>
-  </div>
-
-  <div id="rewardApprovalWrapper" class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 hidden shadow-sm">
-    <h3 class="text-sm font-black text-amber-800 mb-2 flex items-center gap-1.5">🔔 Yêu cầu thương lượng đổi quà cần bố mẹ cấp phép:</h3>
-    <div id="rewardApprovalList" class="space-y-2"></div>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <div class="bg-white border-2 border-pink-100 rounded-2xl p-5 shadow-sm">
-      <h2 class="text-lg font-black text-pink-600 mb-4 flex items-center justify-between border-b border-pink-50 pb-2">
-        <span>📌 Việc cần làm của Nhím</span>
-        <span id="nhimTaskCount" class="text-xs bg-pink-500 text-white px-2.5 py-0.5 rounded-full font-black">0</span>
-      </h2>
-      <div id="nhimTaskList" class="space-y-3"></div>
-    </div>
-
-    <div class="bg-white border-2 border-sky-100 rounded-2xl p-5 shadow-sm">
-      <h2 class="text-lg font-black text-sky-600 mb-4 flex items-center justify-between border-b border-sky-50 pb-2">
-        <span>📌 Việc cần làm của Sóc</span>
-        <span id="socTaskCount" class="text-xs bg-sky-500 text-white px-2.5 py-0.5 rounded-full font-black">0</span>
-      </h2>
-      <div id="socTaskList" class="space-y-3"></div>
-    </div>
-  </div>
-
-  <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md">
-    <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">🏆 Lịch sử hoàn thành & Kỷ luật ngày hè</h2>
-    <div id="historyContainer" class="max-h-60 overflow-y-auto pr-1 space-y-2.5">
-      <div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào được ghi nhận.</div>
-    </div>
-  </div>
-
-</div>
-
-<div id="photoModal" onclick="closePhotoModal()" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-  <img id="modalImg" src="" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl border border-white/10 object-contain">
-</div>
-
+@@ -200,399 +200,399 @@
 <script>
-const soundClick = new Audio('https://signalsmith-audio.co.uk/images/blog/percussion/guiro.wav'); 
-const soundApprove = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg'); 
-const soundReward = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg'); 
-const soundPenalty = new Audio('https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg');
+const CONFIG_DATABASE_URL = "https://script.google.com/macros/s/AKfycbz1mwg470fhqS1UtF8unQUpDlDoAamZDKkYo2OUaCieHPUpTlRq7s-IS3qvfnXEh_P2_w/exec";
 
-let sisterScore = Number(localStorage.getItem('sisterScore')) || 0;
-let littleScore = Number(localStorage.getItem('littleScore')) || 0;
-let tasks = JSON.parse(localStorage.getItem('summerTasks')) || [];
-let pendingRewards = JSON.parse(localStorage.getItem('pendingRewards')) || [];
-let isAudioInitialized = false;
+const ADMIN_PASSWORD_PIN = "1979";
+const ADMIN_PASSWORD_PIN = "abcd";
 
-function initAudioOnFirstTouch() {
-  if (isAudioInitialized) return;
-  soundClick.play().then(() => { soundClick.pause(); }).catch(e => {});
-  soundApprove.play().then(() => { soundApprove.pause(); }).catch(e => {});
-  soundReward.play().then(() => { soundReward.pause(); }).catch(e => {});
-  soundPenalty.play().then(() => { soundPenalty.pause(); }).catch(e => {});
-  isAudioInitialized = true;
-  autoResetDailyTasks();
-}
-
-function playSound(audioObj) {
-  try {
-    audioObj.currentTime = 0;
-    audioObj.play().catch(e => console.log("Yêu cầu tương tác"));
-  } catch (e) { console.log(e); }
-}
+let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
+let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
+let activeTabMobile = "tab-nhim"; 
 
 function updateClock() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-  const dayName = daysOfWeek[now.getDay()];
-  const dateStr = now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  document.getElementById('clock').innerText = `${timeStr} • ${dayName} • ${dateStr}`;
+  document.getElementById('clock').innerText = `${timeStr} • ${daysOfWeek[now.getDay()]} • ${now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
 }
-setInterval(updateClock, 1000);
-updateClock();
+setInterval(updateClock, 1000); updateClock();
 
 function handleTemplateChange() {
-  const select = document.getElementById('taskTemplate');
-  const wrapper = document.getElementById('customTaskWrapper');
-  if (select.value === 'custom') {
-    wrapper.style.visibility = 'visible'; wrapper.style.position = 'static';
-  } else {
-    wrapper.style.visibility = 'hidden'; wrapper.style.position = 'absolute';
-  }
+  const select = document.getElementById('taskTemplate'); const wrapper = document.getElementById('customTaskWrapper');
+  if (select.value === 'custom') { wrapper.style.visibility = 'visible'; wrapper.style.position = 'static'; } 
+  else { wrapper.style.visibility = 'hidden'; wrapper.style.position = 'absolute'; }
 }
 handleTemplateChange();
 
-function saveTasks() {
-  localStorage.setItem('summerTasks', JSON.stringify(tasks));
+function verifyAdminIdentity() {
+  const password = prompt("🔐 Vui lòng nhập mã PIN bảo mật của Bố Mẹ để thực hiện:");
+  if (password === ADMIN_PASSWORD_PIN) return true;
+  alert("❌ Sai mã PIN! Hành động bị từ chối.");
+  return false;
 }
 
-function updateUI() {
+// 🕹️ HÀM SWITCH TAB 5 PHÂN HỆ CHO DI ĐỘNG KHÔNG CÒN BỊ RỐI
+function switchTab(tabId) {
+  if (window.innerWidth >= 768) return; 
+  activeTabMobile = tabId;
+
+  const tabs = ['tab-nhim', 'tab-soc', 'tab-shop', 'tab-admin', 'tab-history'];
+  tabs.forEach(t => {
+    document.getElementById(`btn-${t}`).className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500 relative";
+  });
+
+  const activeBtn = document.getElementById(`btn-${tabId}`);
+  if(tabId === 'tab-nhim') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-pink-500 text-white shadow-sm relative";
+  if(tabId === 'tab-soc') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-sky-500 text-white shadow-sm relative";
+  if(tabId === 'tab-shop') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-amber-500 text-white shadow-sm relative";
+  if(tabId === 'tab-admin') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-purple-600 text-white shadow-sm relative";
+  if(tabId === 'tab-history') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-slate-800 text-white shadow-sm";
+
+  // Cấu hình ẩn hiện các block
+  document.getElementById('box-nhim').style.display = (tabId === 'tab-nhim') ? 'block' : 'none';
+  document.getElementById('area-task-nhim').style.display = (tabId === 'tab-nhim') ? 'block' : 'none';
+
+  document.getElementById('box-soc').style.display = (tabId === 'tab-soc') ? 'block' : 'none';
+  document.getElementById('area-task-soc').style.display = (tabId === 'tab-soc') ? 'block' : 'none';
+
+  document.getElementById('box-team').style.display = (tabId === 'tab-shop' || tabId === 'tab-admin') ? 'block' : 'none';
+  document.getElementById('section-giao-viec').style.display = (tabId === 'tab-admin') ? 'block' : 'none';
+  document.getElementById('rewardApprovalWrapper').style.setProperty('display', (tabId === 'tab-admin' && pendingRewards.length > 0) ? 'block' : 'none', 'important');
+
+  document.getElementById('section-history').style.display = (tabId === 'tab-history') ? 'block' : 'none';
+
+  if (tabId === 'tab-admin') {
+    document.getElementById('section-nhiem-vu').style.display = 'grid';
+    document.getElementById('area-task-nhim').style.display = 'block';
+    document.getElementById('area-task-soc').style.display = 'block';
+  } else if (tabId !== 'tab-nhim' && tabId !== 'tab-soc') {
+    document.getElementById('section-nhiem-vu').style.display = 'none';
+  } else {
+    document.getElementById('section-nhiem-vu').style.display = 'block';
+  }
+}
+
+function checkResponsiveLayout() {
+  if (window.innerWidth >= 768) {
+    document.getElementById('box-nhim').style.display = 'block';
+    document.getElementById('area-task-nhim').style.display = 'block';
+    document.getElementById('box-soc').style.display = 'block';
+    document.getElementById('area-task-soc').style.display = 'block';
+    document.getElementById('box-team').style.display = 'block';
+    document.getElementById('section-giao-viec').style.display = 'block';
+    document.getElementById('section-nhiem-vu').style.display = 'grid';
+    document.getElementById('section-history').style.display = 'block';
+    if(pendingRewards.length > 0) document.getElementById('rewardApprovalWrapper').style.setProperty('display', 'block', 'important');
+  } else {
+    switchTab(activeTabMobile);
+  }
+}
+window.addEventListener('resize', checkResponsiveLayout);
+
+async function cloudFetchSilent() {
+  if(!CONFIG_DATABASE_URL) return;
+  try {
+    const res = await fetch(CONFIG_DATABASE_URL);
+    const cloudData = await res.json();
+    if(cloudData && cloudData.initialized) {
+      sisterScore = cloudData.sisterScore || 0;
+      littleScore = cloudData.littleScore || 0;
+      tasks = cloudData.tasks || [];
+      pendingRewards = cloudData.pendingRewards || [];
+      taskHistory = cloudData.taskHistory || [];
+      avatarsData = cloudData.avatarsData || { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
+
+      if(avatarsData.nhimAvatar) document.getElementById('nhimAvatar').src = avatarsData.nhimAvatar;
+      if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
+      if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
+    }
+  } catch(e) { console.error("Lỗi tải ngầm:", e); }
+  updateUIElements(); 
+}
+
+async function cloudFetchWithLoading() {
+  if(!CONFIG_DATABASE_URL) return;
+  document.getElementById('loadingUi').classList.remove('hidden');
+  await cloudFetchSilent();
+  document.getElementById('loadingUi').classList.add('hidden');
+}
+
+async function cloudPush() {
+  if(!CONFIG_DATABASE_URL) return;
+  document.getElementById('loadingUi').classList.remove('hidden');
+  const payload = {
+    initialized: true, sisterScore, littleScore, tasks, pendingRewards, taskHistory, avatarsData,
+    lastResetDate: localStorage.getItem('lastResetDate') || ""
+  };
+  try {
+    await fetch(CONFIG_DATABASE_URL, { method: "POST", body: JSON.stringify(payload) });
+  } catch(e) { console.error("Lỗi đẩy:", e); }
+  document.getElementById('loadingUi').classList.add('hidden');
+  updateUIElements();
+}
+
+function updateUIElements() {
   document.getElementById('sisterScore').innerText = sisterScore;
   document.getElementById('littleScore').innerText = littleScore;
   document.getElementById('teamScore').innerText = sisterScore + littleScore;
-  localStorage.setItem('sisterScore', sisterScore);
-  localStorage.setItem('littleScore', littleScore);
+
+  // 🔴 THÔNG BÁO CHO BỐ MẸ (Tab Duyệt)
+  let countTasksWaiting = tasks.filter(t => t.completed && !t.approved).length;
+  let countRewardsWaiting = pendingRewards.length;
+  let totalWaitingAdmin = countTasksWaiting + countRewardsWaiting;
+
+  const badgeMobile = document.getElementById('badgeCountMobile');
+  if (totalWaitingAdmin > 0) {
+    badgeMobile.innerText = totalWaitingAdmin; badgeMobile.classList.remove('hidden');
+  } else { badgeMobile.classList.add('hidden'); }
+
+  // 🔴 THÔNG BÁO CHO CÁC CON (Tab Nhím / Tab Sóc - Số việc chưa làm)
+  let uncompletedNhim = tasks.filter(t => t.assignedTo === 'sister' && !t.completed).length;
+  let uncompletedSoc = tasks.filter(t => t.assignedTo === 'little' && !t.completed).length;
+
+  const badgeNhim = document.getElementById('badgeNhimMobile');
+  if (uncompletedNhim > 0) {
+    badgeNhim.innerText = uncompletedNhim; badgeNhim.classList.remove('hidden');
+  } else { badgeNhim.classList.add('hidden'); }
+
+  const badgeSoc = document.getElementById('badgeSocMobile');
+  if (uncompletedSoc > 0) {
+    badgeSoc.innerText = uncompletedSoc; badgeSoc.classList.remove('hidden');
+  } else { badgeSoc.classList.add('hidden'); }
+
+  renderTasks(); renderPendingRewards(); renderHistory();
+  checkResponsiveLayout(); 
 }
 
-function addTask() {
+async function addTask() {
   const assignedTo = document.getElementById('assignPerson').value;
   const templateValue = document.getElementById('taskTemplate').value;
   let taskName = ""; let taskPoints = 0;
-
   if (templateValue === 'custom') {
-    taskName = document.getElementById('customTaskName').value.trim();
-    taskPoints = Number(document.getElementById('customTaskPoints').value);
+    taskName = document.getElementById('customTaskName').value.trim(); taskPoints = Number(document.getElementById('customTaskPoints').value);
     if(!taskName || taskPoints <= 0) { alert('⚠️ Hãy nhập đầy đủ thông tin!'); return; }
-  } else {
-    const data = templateValue.split('|'); taskName = data[0]; taskPoints = Number(data[1]);
-  }
+  } else { const data = templateValue.split('|'); taskName = data[0]; taskPoints = Number(data[1]); }
 
-  tasks.push({
-    name: taskName, points: taskPoints, assignedTo: assignedTo,
-    completed: false, approved: false, proofImg: null
-  });
+  tasks.push({ name: taskName, points: taskPoints, assignedTo: assignedTo, completed: false, approved: false, proofImg: null });
+  document.getElementById('customTaskName').value = ""; document.getElementById('customTaskPoints').value = "";
 
-  document.getElementById('customTaskName').value = "";
-  document.getElementById('customTaskPoints').value = "";
-  saveTasks();
-  renderTasks();
+  updateUIElements();
+  await cloudPush();
 }
 
 function handleTaskPhoto(event, index) {
@@ -294,175 +241,124 @@ function handleTaskPhoto(event, index) {
   const reader = new FileReader();
   reader.onload = function (e) {
     const img = new Image();
-    img.onload = function () {
-      const canvas = document.createElement('canvas');
-      let width = img.width; let height = img.height;
-      const MAX_WIDTH = 600;
-      if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
+    img.onload = async function () {
+      const canvas = document.createElement('canvas'); let width = img.width; let height = img.height;
+      if (width > 400) { height = Math.round((height * 400) / width); width = 400; }
       canvas.width = width; canvas.height = height;
-      const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
-      const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-      tasks[index].proofImg = compressedBase64;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      tasks[index].proofImg = canvas.toDataURL('image/jpeg', 0.6);
       tasks[index].completed = true;
-      saveTasks(); playSound(soundClick); renderTasks();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+      await cloudPush();
+    }; img.src = e.target.result;
+  }; reader.readAsDataURL(file);
 }
 
-function completeTask(index) {
+async function completeTask(index) {
   if(tasks[index].completed || tasks[index].approved) return;
-  tasks[index].completed = true;
-  saveTasks(); playSound(soundClick); renderTasks();
+  tasks[index].completed = true; await cloudPush();
 }
 
-function approveTask(index) {
+async function approveTask(index) {
   if(tasks[index].approved) return;
   if(!tasks[index].completed) { alert('⚠️ Nhiệm vụ này con chưa báo làm xong!'); return; }
+  if (!verifyAdminIdentity()) return;
+
   tasks[index].approved = true;
   if(tasks[index].assignedTo === 'sister') { sisterScore += tasks[index].points; } else { littleScore += tasks[index].points; }
-
-  updateUI();
-  saveHistory(tasks[index], 'task');
-  tasks.splice(index, 1);
-  saveTasks(); playSound(soundApprove); renderTasks();
+  saveHistoryLocal(tasks[index], 'task');
+  tasks.splice(index, 1); await cloudPush();
 }
 
 function renderTasks() {
-  const nhimList = document.getElementById('nhimTaskList');
-  const socList = document.getElementById('socTaskList');
-  nhimList.innerHTML = ''; socList.innerHTML = '';
-  let nhimCount = 0; let socCount = 0;
-
+  const nhimList = document.getElementById('nhimTaskList'); const socList = document.getElementById('socTaskList');
+  nhimList.innerHTML = ''; socList.innerHTML = ''; let nhimCount = 0; let socCount = 0;
   tasks.forEach((task, index) => {
-    const card = document.createElement('div');
-    card.className = 'bg-slate-50 border border-slate-100 rounded-xl p-3 flex flex-col justify-between gap-3 shadow-sm';
-    let imgHTML = '';
-    if (task.proofImg) {
-      imgHTML = `<div class="mt-2 relative w-14 h-14 cursor-zoom-in" onclick="openPhotoModal('${task.proofImg}')"><img src="${task.proofImg}" class="w-14 h-14 object-cover rounded-lg border border-slate-200"></div>`;
-    }
-
+    const card = document.createElement('div'); card.className = 'bg-slate-50 border border-slate-100 rounded-xl p-3 flex flex-col justify-between gap-3 shadow-sm';
+    let imgHTML = task.proofImg ? `<div class="mt-2 relative w-14 h-14 cursor-zoom-in" onclick="openPhotoModal('${task.proofImg}')"><img src="${task.proofImg}" class="w-14 h-14 object-cover rounded-lg border border-slate-200"></div>` : '';
     card.innerHTML = `
       <div class="flex justify-between items-start gap-2 min-w-0">
         <div class="min-w-0 flex-1">
           <div class="text-sm font-bold text-slate-800 truncate">${task.name}</div>
-          <div class="flex items-center gap-2 mt-1 flex-wrap">
-            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">+${task.points}đ</span>
-            ${task.completed 
-              ? `<span class="text-[10px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.5 rounded border border-amber-100">${task.proofImg ? '📸 Có ảnh chờ duyệt' : '⏳ Chờ duyệt'}</span>` 
-              : `<span class="text-[10px] bg-red-100 text-red-700 font-black px-1.5 py-0.5 rounded border border-red-200 animate-pulse-danger">🚨 Nguy cơ trừ điểm!</span>`}
-          </div>
-          ${imgHTML}
+          <div class="flex items-center gap-2 mt-1 flex-wrap"><span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">+${task.points}đ</span>
+            ${task.completed ? `<span class="text-[10px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.5 rounded border border-amber-100">${task.proofImg ? '📸 Có ảnh chờ duyệt' : '⏳ Chờ duyệt'}</span>` : `<span class="text-[10px] bg-red-100 text-red-700 font-black px-1.5 py-0.5 rounded border border-red-200 animate-pulse-danger">🚨 Nguy cơ trừ điểm!</span>`}
+          </div>${imgHTML}
         </div>
       </div>
       <div class="flex justify-end gap-1.5 pt-2 border-t border-slate-100/60">
-        <label class="px-2 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg text-xs font-bold cursor-pointer flex items-center gap-1 ${task.completed ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}">
-          📷 Gửi ảnh <input type="file" hidden accept="image/*" onchange="handleTaskPhoto(event, ${index})">
-        </label>
+        <label class="px-2 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg text-xs font-bold cursor-pointer flex items-center gap-1 ${task.completed ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}">📷 Gửi ảnh <input type="file" hidden accept="image/*" onchange="handleTaskPhoto(event, ${index})"></label>
         <button onclick="completeTask(${index})" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg text-xs font-bold ${task.completed ? 'opacity-40 cursor-not-allowed' : ''}">✔ Xong thường</button>
         <button onclick="approveTask(${index})" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm">👨‍👩‍👧 Duyệt</button>
-      </div>
-    `;
+      </div>`;
     if(task.assignedTo === 'sister') { nhimList.appendChild(card); nhimCount++; } else { socList.appendChild(card); socCount++; }
   });
-
-  document.getElementById('nhimTaskCount').innerText = nhimCount;
-  document.getElementById('socTaskCount').innerText = socCount;
+  document.getElementById('nhimTaskCount').innerText = nhimCount; document.getElementById('socTaskCount').innerText = socCount;
   if(nhimCount === 0) nhimList.innerHTML = '<div class="text-xs text-slate-400 text-center py-4 italic">Hôm nay Nhím chưa có việc gì!</div>';
   if(socCount === 0) socList.innerHTML = '<div class="text-xs text-slate-400 text-center py-4 italic">Hôm nay Sóc chưa có việc gì!</div>';
 }
 
-function redeemReward(points, rewardName) {
-  const total = sisterScore + littleScore;
-  if(total < points) { alert('❌ Điểm tích lũy của Team hiện tại không đủ!'); return; }
-  if(!confirm(`Xác nhận dùng ${points} điểm của Team để đổi ngay phần quà [${rewardName}]?`)) return;
+// 🔐 KHÓA BẢO MẬT: BẤT KỲ QUÀ CỐ ĐỊNH NÀO CŨNG PHẢI ĐẨY VÀO HÀNG ĐỢI CHỜ DUYỆT CHỨ KHÔNG ĐƯỢC TRỪ THẲNG ĐIỂM NGHIỄM NHIÊN
+async function requestReward(points, rewardName) {
+  const total = sisterScore + littleScore; 
+  if(total < points) { alert('❌ Điểm tích lũy hiện tại của cả đội chưa đủ để gửi yêu cầu đổi món quà này!'); return; }
+  if(!confirm(`Con xác nhận dùng ${points} điểm chung để gửi đề xuất đổi quà [${rewardName}] lên bố mẹ không?`)) return;
 
-  executeScoreDeduction(points);
-  saveHistory({ name: rewardName, points: points }, 'reward');
-  updateUI(); playSound(soundReward); alert('🎉 Đổi quà thành công!');
+  pendingRewards.push({ name: rewardName, points: points });
+  await cloudPush(); 
+  alert('📢 Đã gửi đề xuất thành công! Con hãy đợi bố mẹ duyệt cho phép nhé.');
 }
 
-function executeScoreDeduction(points) {
-  const total = sisterScore + littleScore;
-  if (total === 0) { sisterScore = 0; littleScore = 0; } else {
-    const sisterRatio = sisterScore / total; const littleRatio = littleScore / total;
-    sisterScore = Math.max(0, Math.round(sisterScore - (points * sisterRatio)));
-    littleScore = Math.max(0, Math.round(littleScore - (points * littleRatio)));
-  }
-}
-
-function requestCustomReward() {
-  const name = document.getElementById('customRewardName').value.trim();
-  const points = Number(document.getElementById('customRewardPoints').value);
-  const total = sisterScore + littleScore;
-
+async function requestCustomReward() {
+  const name = document.getElementById('customRewardName').value.trim(); const points = Number(document.getElementById('customRewardPoints').value);
   if(!name || points <= 0) { alert('⚠️ Hãy điền đầy đủ thông tin!'); return; }
-  if(total < points) { alert('❌ Tổng điểm không đủ số điểm đề xuất!'); return; }
-
-  pendingRewards.push({ name: name, points: points });
-  localStorage.setItem('pendingRewards', JSON.stringify(pendingRewards));
+  pendingRewards.push({ name: `🤝 Thương lượng: ${name}`, points: points });
   document.getElementById('customRewardName').value = ""; document.getElementById('customRewardPoints').value = "";
-  renderPendingRewards(); alert('📢 Đã gửi đề xuất thương lượng lên bảng kiểm tra của bố mẹ!');
+  await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
 }
 
 function renderPendingRewards() {
-  const wrapper = document.getElementById('rewardApprovalWrapper');
-  const container = document.getElementById('rewardApprovalList');
+  const wrapper = document.getElementById('rewardApprovalWrapper'); const container = document.getElementById('rewardApprovalList');
   if (pendingRewards.length === 0) { wrapper.classList.add('hidden'); return; }
-  
   wrapper.classList.remove('hidden');
   container.innerHTML = pendingRewards.map((reward, index) => `
     <div class="bg-white border border-amber-200 rounded-xl p-3 flex justify-between items-center text-xs shadow-sm">
-      <div><span class="text-amber-800 font-bold">🤝 Đề xuất thương lượng:</span> <span class="font-extrabold text-slate-800 text-sm">${reward.name}</span><span class="block text-[10px] text-slate-400 mt-0.5">Giá trị quỹ chung: <b class="text-amber-600">${reward.points}đ</b></span></div>
+      <div><span class="text-amber-800 font-bold">🎁 Yêu cầu đổi quà:</span> <span class="font-extrabold text-slate-800 text-sm">${reward.name}</span><span class="block text-[10px] text-slate-400 mt-0.5">Giá trị quỹ chung cần trừ: <b class="text-amber-600">${reward.points}đ</b></span></div>
       <div class="flex gap-1.5">
         <button onclick="approveCustomReward(${index})" class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-black shadow-sm">👍 Cho phép</button>
         <button onclick="rejectCustomReward(${index})" class="px-2 py-1.5 bg-slate-200 text-slate-600 rounded-lg font-bold">❌ Từ chối</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function approveCustomReward(index) {
+async function approveCustomReward(index) {
   const reward = pendingRewards[index]; const total = sisterScore + littleScore;
-  if (total < reward.points) { alert('❌ Điểm hiện tại không đủ!'); return; }
-  
-  executeScoreDeduction(reward.points);
-  saveHistory({ name: `🤝 Thương lượng: ${reward.name}`, points: reward.points }, 'reward');
-  pendingRewards.splice(index, 1); localStorage.setItem('pendingRewards', JSON.stringify(pendingRewards));
-  updateUI(); renderPendingRewards(); playSound(soundReward); alert(`✅ Đã phê duyệt quà thương lượng.`);
+  if (total < reward.points) { alert('❌ Điểm quỹ chung hiện không đủ để phê duyệt phần quà này!'); return; }
+  if (!verifyAdminIdentity()) return;
+
+  executeScoreDeduction(reward.points); 
+  saveHistoryLocal({ name: reward.name, points: reward.points }, 'reward');
+  pendingRewards.splice(index, 1); await cloudPush();
+  alert('✅ Đã phê duyệt cấp quà và khấu trừ điểm thành công!');
 }
 
-function rejectCustomReward(index) {
-  if (confirm('Bố mẹ từ chối yêu cầu thương lượng quà này?')) {
-    pendingRewards.splice(index, 1); localStorage.setItem('pendingRewards', JSON.stringify(pendingRewards));
-    renderPendingRewards();
-  }
+async function rejectCustomReward(index) {
+  if (!verifyAdminIdentity()) return;
+  if (confirm('Bố mẹ từ chối yêu cầu đổi quà này của các con?')) { pendingRewards.splice(index, 1); await cloudPush(); }
 }
 
-function openPhotoModal(base64Src) {
-  const modal = document.getElementById('photoModal'); const modalImg = document.getElementById('modalImg');
-  modalImg.src = base64Src; modal.classList.remove('hidden');
-}
+function openPhotoModal(base64Src) { document.getElementById('modalImg').src = base64Src; document.getElementById('photoModal').classList.remove('hidden'); }
 function closePhotoModal() { document.getElementById('photoModal').classList.add('hidden'); }
 
-function saveHistory(item, type) {
-  let history = JSON.parse(localStorage.getItem('taskHistory')) || [];
-  history.unshift({
+function saveHistoryLocal(item, type) {
+  taskHistory.unshift({
     name: item.name, points: item.points, assignedTo: item.assignedTo || null, type: type,
     time: new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})
   });
-  localStorage.setItem('taskHistory', JSON.stringify(history));
-  renderHistory();
 }
 
 function renderHistory() {
-  const history = JSON.parse(localStorage.getItem('taskHistory')) || [];
   const container = document.getElementById('historyContainer');
-  if(history.length === 0) { container.innerHTML = '<div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào được ghi nhận.</div>'; return; }
-
-  container.innerHTML = history.map(item => {
+  if(!taskHistory || taskHistory.length === 0) { container.innerHTML = '<div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào được ghi nhận.</div>'; return; }
+  container.innerHTML = taskHistory.map(item => {
     if (item.type === 'reward') {
       return `<div class="bg-red-50/50 border border-red-100 rounded-xl p-3 flex justify-between items-center text-xs">
           <div><span class="font-bold text-red-600">🎁 ĐÃ ĐỔI QUÀ:</span> <span class="font-semibold text-slate-900">${item.name}</span><span class="text-slate-400 block text-[10px] mt-0.5">⏱ Duyệt đổi lúc ${item.time}</span></div>
@@ -482,64 +378,79 @@ function renderHistory() {
   }).join('');
 }
 
-function loadAvatar(event, id) {
-  const file = event.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) { document.getElementById(id).src = e.target.result; localStorage.setItem(id, e.target.result); }
-  reader.readAsDataURL(file);
+function secureLoadAvatar(id) {
+  if (!verifyAdminIdentity()) return; 
+
+  const fileInput = document.getElementById('secureImageInput');
+  fileInput.onchange = function(event) {
+    const file = event.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.onload = async function () {
+        const canvas = document.createElement('canvas');
+        let targetWidth = (id === 'familyPhoto') ? 550 : 180; 
+        let width = img.width; let height = img.height;
+        if (width > targetWidth) { height = Math.round((height * targetWidth) / width); width = targetWidth; }
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+        const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.5);
+        document.getElementById(id).src = optimizedBase64;
+        avatarsData[id] = optimizedBase64;
+        await cloudPush();
+      }; img.src = e.target.result;
+    }; reader.readAsDataURL(file);
+  };
+  fileInput.click();
 }
 
-function loadSavedAvatars() {
-  const nhim = localStorage.getItem('nhimAvatar'); const soc = localStorage.getItem('socAvatar'); const family = localStorage.getItem('familyPhoto');
-  if(nhim) document.getElementById('nhimAvatar').src = nhim; if(soc) document.getElementById('socAvatar').src = soc; if(family) document.getElementById('familyPhoto').src = family;
-}
-
-function viewAvatar(id) { openPhotoModal(document.getElementById(id).src); }
-function removeAvatar(id) {
+async function secureRemoveAvatar(id) {
+  if (!verifyAdminIdentity()) return;
   const defaultAvatar = id === 'nhimAvatar' ? 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png' : 'https://cdn-icons-png.flaticon.com/512/4140/4140051.png';
-  document.getElementById(id).src = defaultAvatar; localStorage.removeItem(id);
+  document.getElementById(id).src = defaultAvatar; avatarsData[id] = ""; await cloudPush();
 }
 
-function resetAllData() {
-  if(confirm('🚨 Bạn có chắc chắn muốn xóa vĩnh viễn toàn bộ dữ liệu?')) {
-    localStorage.clear(); sisterScore = 0; littleScore = 0; tasks = []; pendingRewards = [];
-    renderTasks(); renderPendingRewards(); renderHistory(); updateUI(); loadSavedAvatars();
-    alert('✅ Dữ liệu làm mới hoàn toàn.');
+async function secureResetAllData() {
+  const password = prompt("🚨 CẢNH BÁO: Nhập mã PIN của Bố để XÓA VĨNH VIỄN toàn bộ dữ liệu đám mây:");
+  if (password !== ADMIN_PASSWORD_PIN) { alert("❌ Sai mã PIN!"); return; }
+
+  if(confirm('Bạn có chắc chắn 100% muốn xóa sạch điểm số và lịch sử không?')) {
+    sisterScore = 0; littleScore = 0; tasks = []; pendingRewards = []; taskHistory = [];
+    avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
+    document.getElementById('nhimAvatar').src = 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png';
+    document.getElementById('socAvatar').src = 'https://cdn-icons-png.flaticon.com/512/4140/4140051.png';
+    document.getElementById('familyPhoto').src = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=600&auto=format&fit=crop';
+    await cloudPush();
   }
 }
 
-function autoResetDailyTasks() {
+async function autoResetDailyTasks() {
   const today = new Date().toLocaleDateString('vi-VN');
   const lastReset = localStorage.getItem('lastResetDate');
 
   if(lastReset && lastReset !== today) {
-    let playedSound = false;
-
     tasks.forEach(task => {
       if(!task.completed && !task.approved) {
-        if(task.assignedTo === 'sister') {
-          sisterScore = Math.max(0, sisterScore - task.points);
-        } else {
-          littleScore = Math.max(0, littleScore - task.points);
-        }
-        saveHistory({ name: task.name, points: task.points, assignedTo: task.assignedTo }, 'penalty');
-        playedSound = true;
+        if(task.assignedTo === 'sister') { sisterScore = Math.max(0, sisterScore - task.points); } 
+        else { littleScore = Math.max(0, littleScore - task.points); }
+        saveHistoryLocal({ name: task.name, points: task.points, assignedTo: task.assignedTo }, 'penalty');
       }
     });
-
-    if(playedSound) { playedSound = true; }
-
-    tasks = [];
-    localStorage.setItem('lastResetDate', today);
-    saveTasks();
-    updateUI();
-    renderTasks();
-  } else if (!lastReset) {
-    localStorage.setItem('lastResetDate', today);
-  }
+    tasks = []; localStorage.setItem('lastResetDate', today);
+    await cloudPush();
+  } else if (!lastReset) { localStorage.setItem('lastResetDate', today); }
 }
 
-loadSavedAvatars(); updateUI(); renderTasks(); renderPendingRewards(); renderHistory();
+async function initSystem() {
+  await cloudFetchWithLoading();
+  await autoResetDailyTasks();
+
+  setInterval(async () => {
+    await cloudFetchSilent();
+  }, 10000); 
+}
+initSystem();
 </script>
 
 </body>
