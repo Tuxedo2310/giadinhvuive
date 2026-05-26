@@ -16,7 +16,7 @@
   </style>
 </head>
 
-<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-24 relative" onclick="initAudioOnFirstTouch()">
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-24 relative">
 
 <div id="loadingUi" class="fixed inset-0 z-50 flex items-center justify-center loading-overlay hidden">
   <div class="bg-white p-5 rounded-2xl shadow-xl border border-slate-100 flex flex-col items-center gap-3">
@@ -28,6 +28,7 @@
 <div class="max-w-6xl mx-auto px-4 pt-6">
 
   <div class="relative overflow-hidden bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 text-white rounded-3xl shadow-xl mb-6 flex flex-col md:flex-row md:justify-between md:items-stretch min-h-[160px]">
+    
     <div class="p-6 md:p-8 flex flex-col justify-center relative z-10 flex-1">
       <h1 class="text-4xl font-black tracking-tight drop-shadow-md flex items-center gap-2">
         🌞 SUMMER TEAM FAMILY
@@ -48,9 +49,9 @@
           <div class="text-[10px] text-white/90 font-medium">Chăm ngoan • Tự lập • Vận động</div>
         </div>
       </div>
-      <label class="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-900 text-white px-2 py-1 rounded-md text-[10px] font-bold cursor-pointer transition shadow-md">
-        📷 Đổi ảnh gia đình <input type="file" hidden accept="image/*" onchange="loadAvatar(event, 'familyPhoto')">
-      </label>
+      <button onclick="secureLoadAvatar('familyPhoto')" class="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-900 text-white px-2 py-1 rounded-md text-[10px] font-bold transition shadow-md">
+        📷 Đổi ảnh gia đình
+      </button>
     </div>
   </div>
 
@@ -87,8 +88,8 @@
       <div class="relative group mx-auto w-28 h-28 mb-4">
         <img id="nhimAvatar" src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" class="w-28 h-28 rounded-full object-cover border-4 border-pink-300 shadow-md" />
         <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5">
-          <label class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold cursor-pointer">📷 <input type="file" hidden accept="image/*" onchange="loadAvatar(event, 'nhimAvatar')"></label>
-          <button onclick="removeAvatar('nhimAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
+          <button onclick="secureLoadAvatar('nhimAvatar')" class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold shadow">📷</button>
+          <button onclick="secureRemoveAvatar('nhimAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
         </div>
       </div>
       <div class="text-5xl font-black text-pink-600 tracking-tight" id="sisterScore">0</div>
@@ -98,7 +99,7 @@
 
     <div class="bg-gradient-to-b from-purple-50/80 to-white border-2 border-purple-200 rounded-3xl shadow-lg p-6 relative lg:sticky lg:top-4">
       <div class="text-center mb-4">
-        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUỸ ĐIỂM CHUNG TEAM</span>
+        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUY ĐIỂM CHUNG TEAM</span>
         <div class="text-6xl font-black text-purple-700 tracking-tight mt-2.5" id="teamScore">0</div>
       </div>
       <details open class="group border border-purple-100 rounded-2xl overflow-hidden bg-white shadow-sm mb-3">
@@ -117,7 +118,7 @@
           </div>
         </div>
       </details>
-      <button onclick="resetAllData()" class="w-full border border-red-200 hover:bg-red-50 text-red-600 rounded-xl py-2 text-xs font-bold transition">🗑 Reset dữ liệu</button>
+      <button onclick="secureResetAllData()" class="w-full border border-red-200 hover:bg-red-50 text-red-600 rounded-xl py-2 text-xs font-bold transition">🗑 Reset dữ liệu</button>
     </div>
 
     <div class="bg-gradient-to-b from-sky-50/80 to-white border-2 border-sky-200 rounded-3xl card-shadow-blue p-6 text-center">
@@ -128,8 +129,8 @@
       <div class="relative group mx-auto w-28 h-28 mb-4">
         <img id="socAvatar" src="https://cdn-icons-png.flaticon.com/512/4140/4140051.png" class="w-28 h-28 rounded-full object-cover border-4 border-sky-300 shadow-md" />
         <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5">
-          <label class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold cursor-pointer">📷 <input type="file" hidden accept="image/*" onchange="loadAvatar(event, 'socAvatar')"></label>
-          <button onclick="removeAvatar('socAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
+          <button onclick="secureLoadAvatar('socAvatar')" class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold shadow">📷</button>
+          <button onclick="secureRemoveAvatar('socAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
         </div>
       </div>
       <div class="text-5xl font-black text-sky-600 tracking-tight" id="littleScore">0</div>
@@ -173,40 +174,16 @@
   <img id="modalImg" src="" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl border border-white/10 object-contain">
 </div>
 
+<input type="file" id="secureImageInput" hidden accept="image/*">
+
 <script>
 const CONFIG_DATABASE_URL = "https://script.google.com/macros/s/AKfycbz1mwg470fhqS1UtF8unQUpDlDoAamZDKkYo2OUaCieHPUpTlRq7s-IS3qvfnXEh_P2_w/exec";
 
-// 🎛️ KHÓA ĐƯỜNG LINK MỚI: Dùng kho file WAV siêu ngắn của thư viện mã nguồn mở, không thể lặp chuông báo thức
-const soundSend = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-01.wav');     // Con báo xong việc -> Tiếng Pop nhẹ 0.1s
-const soundReceive = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-04.wav');  // Bố mẹ nhận việc -> Tiếng Click cơ học ngắn 0.1s
-const soundTing = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-12.wav');     // Bố mẹ bấm Duyệt -> Tiếng Ting thanh thót ngắn gọn
-const soundCoin = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-18.wav');     // Con được cộng điểm -> Tiếng Coin kaching ngắn gọn
-const soundPenalty = new Audio('https://bencrowder.net/files/scrolling-sounds/scrolling-sounds-09.wav');  // Tiếng còi phạt ngắn khi sang ngày
+// MẬT MÃ QUẢN TRỊ CỦA BỐ (Mặc định: 1979)
+const ADMIN_PASSWORD_PIN = "1979";
 
 let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
-let isAudioInitialized = false;
-
-let oldTasksCount = 0;
-let oldApprovedCount = 0;
-
-function initAudioOnFirstTouch() {
-  if (isAudioInitialized) return;
-  soundSend.play().then(() => soundSend.pause()).catch(() => {});
-  soundReceive.play().then(() => soundReceive.pause()).catch(() => {});
-  soundTing.play().then(() => soundTing.pause()).catch(() => {});
-  soundCoin.play().then(() => soundCoin.pause()).catch(() => {});
-  soundPenalty.play().then(() => soundPenalty.pause()).catch(() => {});
-  isAudioInitialized = true;
-  autoResetDailyTasks();
-}
-
-function playSound(audioObj) {
-  if (!isAudioInitialized) return;
-  audioObj.currentTime = 0;
-  audioObj.loop = false; // Triệt tiêu lệnh lặp âm thanh tận gốc rễ
-  audioObj.play().catch(e => console.log("Chờ click mở khóa"));
-}
 
 function updateClock() {
   const now = new Date();
@@ -223,25 +200,20 @@ function handleTemplateChange() {
 }
 handleTemplateChange();
 
+// Kiểm tra mã PIN bảo mật trước khi thực thi lệnh quan trọng
+function verifyAdminIdentity() {
+  const password = prompt("🔐 Vui lòng nhập mã PIN bảo mật của Bố Mẹ để thực hiện hành động này:");
+  if (password === ADMIN_PASSWORD_PIN) return true;
+  alert("❌ Sai mã PIN! Hành động bị từ chối.");
+  return false;
+}
+
 async function cloudFetchSilent() {
   if(!CONFIG_DATABASE_URL) return;
   try {
     const res = await fetch(CONFIG_DATABASE_URL);
     const cloudData = await res.json();
     if(cloudData && cloudData.initialized) {
-      
-      let currentCompletedCount = (cloudData.tasks || []).filter(t => t.completed && !t.approved).length;
-      if (currentCompletedCount > oldTasksCount) {
-        playSound(soundReceive); 
-      }
-      oldTasksCount = currentCompletedCount;
-
-      let currentHistoryCount = (cloudData.taskHistory || []).length;
-      if (oldApprovedCount > 0 && currentHistoryCount > oldApprovedCount) {
-        playSound(soundCoin); 
-      }
-      oldApprovedCount = currentHistoryCount;
-
       sisterScore = cloudData.sisterScore || 0;
       littleScore = cloudData.littleScore || 0;
       tasks = cloudData.tasks || [];
@@ -253,7 +225,7 @@ async function cloudFetchSilent() {
       if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
       if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
     }
-  } catch(e) { console.error("Lỗi tải:", e); }
+  } catch(e) { console.error("Lỗi tải ngầm:", e); }
   updateUIElements(); 
 }
 
@@ -310,7 +282,6 @@ function handleTaskPhoto(event, index) {
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
       tasks[index].proofImg = canvas.toDataURL('image/jpeg', 0.6);
       tasks[index].completed = true;
-      playSound(soundSend); 
       await cloudPush();
     }; img.src = e.target.result;
   }; reader.readAsDataURL(file);
@@ -318,20 +289,21 @@ function handleTaskPhoto(event, index) {
 
 async function completeTask(index) {
   if(tasks[index].completed || tasks[index].approved) return;
-  tasks[index].completed = true; 
-  playSound(soundSend); 
-  await cloudPush();
+  tasks[index].completed = true; await cloudPush();
 }
 
+// 🔐 KHÓA BẢO MẬT: BỐ MẸ NHẬP ĐÚNG MÃ PIN MỚI DUYỆT ĐƯỢC VIỆC CỦA CON
 async function approveTask(index) {
   if(tasks[index].approved) return;
   if(!tasks[index].completed) { alert('⚠️ Nhiệm vụ này con chưa báo làm xong!'); return; }
+  
+  // Xác thực danh tính quản trị viên
+  if (!verifyAdminIdentity()) return;
+
   tasks[index].approved = true;
   if(tasks[index].assignedTo === 'sister') { sisterScore += tasks[index].points; } else { littleScore += tasks[index].points; }
   saveHistoryLocal(tasks[index], 'task');
-  tasks.splice(index, 1); 
-  playSound(soundTing); 
-  await cloudPush();
+  tasks.splice(index, 1); await cloudPush();
 }
 
 function renderTasks() {
@@ -365,7 +337,7 @@ async function redeemReward(points, rewardName) {
   const total = sisterScore + littleScore; if(total < points) { alert('❌ Điểm tích lũy của Team hiện tại không đủ!'); return; }
   if(!confirm(`Xác nhận dùng ${points} điểm của Team để đổi ngay phần quà [${rewardName}]?`)) return;
   executeScoreDeduction(points); saveHistoryLocal({ name: rewardName, points: points }, 'reward');
-  playSound(soundTing); await cloudPush(); alert('🎉 Đổi quà thành công!');
+  await cloudPush(); alert('🎉 Đổi quà thành công!');
 }
 
 function executeScoreDeduction(points) {
@@ -381,7 +353,7 @@ async function requestCustomReward() {
   if(!name || points <= 0) { alert('⚠️ Hãy điền đầy đủ thông tin!'); return; }
   pendingRewards.push({ name: name, points: points });
   document.getElementById('customRewardName').value = ""; document.getElementById('customRewardPoints').value = "";
-  playSound(soundSend); await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
+  await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
 }
 
 function renderPendingRewards() {
@@ -398,14 +370,20 @@ function renderPendingRewards() {
     </div>`).join('');
 }
 
+// 🔐 KHÓA BẢO MẬT: DUYỆT QUÀ THƯƠNG LƯỢNG PHẢI NHẬP MÃ PIN
 async function approveCustomReward(index) {
   const reward = pendingRewards[index]; const total = sisterScore + littleScore;
   if (total < reward.points) { alert('❌ Điểm hiện tại không đủ!'); return; }
+  
+  if (!verifyAdminIdentity()) return;
+
   executeScoreDeduction(reward.points); saveHistoryLocal({ name: `🤝 Thương lượng: ${reward.name}`, points: reward.points }, 'reward');
-  pendingRewards.splice(index, 1); playSound(soundTing); await cloudPush();
+  pendingRewards.splice(index, 1); await cloudPush();
 }
 
+// 🔐 KHÓA BẢO MẬT: TỪ CHỐI QUÀ THƯƠNG LƯỢNG CŨNG PHẢI NHẬP MÃ PIN
 async function rejectCustomReward(index) {
+  if (!verifyAdminIdentity()) return;
   if (confirm('Bố mẹ từ chối yêu cầu thương lượng quà này?')) { pendingRewards.splice(index, 1); await cloudPush(); }
 }
 
@@ -443,6 +421,9 @@ function renderHistory() {
 }
 
 function loadAvatar(event, id) {
+  const password = prompt("🔐 Vui lòng nhập mã PIN bảo mật của Bố để thay đổi ảnh:");
+  if (password !== ADMIN_PASSWORD_PIN) { alert("❌ Sai mã PIN!"); return; }
+
   const file = event.target.files[0]; if(!file) return;
   const reader = new FileReader();
   reader.onload = async function(e) {
@@ -463,14 +444,46 @@ function loadAvatar(event, id) {
   }; reader.readAsDataURL(file);
 }
 
-function viewAvatar(id) { openPhotoModal(document.getElementById(id).src); }
-async function removeAvatar(id) {
+function secureLoadAvatar(id) {
+  const password = prompt("🔐 Vui lòng nhập mã PIN bảo mật của Bố để thay đổi ảnh:");
+  if (password !== ADMIN_PASSWORD_PIN) { alert("❌ Sai mã PIN!"); return; }
+  
+  const fileInput = document.getElementById('secureImageInput');
+  fileInput.onchange = function(event) {
+    const file = event.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const img = new Image();
+      img.onload = async function() {
+        const canvas = document.createElement('canvas');
+        let targetWidth = (id === 'familyPhoto') ? 550 : 180; 
+        let width = img.width; let height = img.height;
+        if (width > targetWidth) { height = Math.round((height * targetWidth) / width); width = targetWidth; }
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.5);
+        
+        document.getElementById(id).src = optimizedBase64;
+        avatarsData[id] = optimizedBase64;
+        await cloudPush();
+      }; img.src = e.target.result;
+    }; reader.readAsDataURL(file);
+  };
+  fileInput.click();
+}
+
+async function secureRemoveAvatar(id) {
+  const password = prompt("🔐 Nhập mã PIN của Bố để xóa ảnh:");
+  if (password !== ADMIN_PASSWORD_PIN) { alert("❌ Sai mật mã!"); return; }
   const defaultAvatar = id === 'nhimAvatar' ? 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png' : 'https://cdn-icons-png.flaticon.com/512/4140/4140051.png';
   document.getElementById(id).src = defaultAvatar; avatarsData[id] = ""; await cloudPush();
 }
 
-async function resetAllData() {
-  if(confirm('🚨 Bạn có chắc chắn muốn xóa vĩnh viễn toàn bộ dữ liệu đám mây?')) {
+async function secureResetAllData() {
+  const password = prompt("🚨 CẢNH BÁO: Nhập mã PIN của Bố để XÓA VĨNH VIỄN toàn bộ dữ liệu đám mây:");
+  if (password !== ADMIN_PASSWORD_PIN) { alert("❌ Sai mã PIN!"); return; }
+  
+  if(confirm('Bạn có chắc chắn 100% muốn xóa sạch điểm số và lịch sử không?')) {
     sisterScore = 0; littleScore = 0; tasks = []; pendingRewards = []; taskHistory = [];
     avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
     document.getElementById('nhimAvatar').src = 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png';
@@ -481,49 +494,26 @@ async function resetAllData() {
 }
 
 async function autoResetDailyTasks() {
-  if(!isAudioInitialized) return; 
   const today = new Date().toLocaleDateString('vi-VN');
   const lastReset = localStorage.getItem('lastResetDate');
   
   if(lastReset && lastReset !== today) {
-    let playedSound = false;
     tasks.forEach(task => {
       if(!task.completed && !task.approved) {
         if(task.assignedTo === 'sister') { sisterScore = Math.max(0, sisterScore - task.points); } 
         else { littleScore = Math.max(0, littleScore - task.points); }
         saveHistoryLocal({ name: task.name, points: task.points, assignedTo: task.assignedTo }, 'penalty');
-        playedSound = true;
       }
     });
-    if(playedSound) { playSound(soundPenalty); }
     tasks = []; localStorage.setItem('lastResetDate', today);
     await cloudPush();
   } else if (!lastReset) { localStorage.setItem('lastResetDate', today); }
 }
 
 async function initSystem() {
-  if(!CONFIG_DATABASE_URL) return;
-  document.getElementById('loadingUi').classList.remove('hidden');
-  try {
-    const res = await fetch(CONFIG_DATABASE_URL);
-    const cloudData = await res.json();
-    if(cloudData && cloudData.initialized) {
-      sisterScore = cloudData.sisterScore || 0; littleScore = cloudData.littleScore || 0;
-      tasks = cloudData.tasks || []; pendingRewards = cloudData.pendingRewards || [];
-      taskHistory = cloudData.taskHistory || []; avatarsData = cloudData.avatarsData || {};
-      
-      oldTasksCount = tasks.filter(t => t.completed && !t.approved).length;
-      oldApprovedCount = taskHistory.length;
+  await cloudFetchWithLoading();
+  await autoResetDailyTasks();
 
-      if(avatarsData.nhimAvatar) document.getElementById('nhimAvatar').src = avatarsData.nhimAvatar;
-      if(avatarsData.socAvatar) document.getElementById('socAvatar').src = avatarsData.socAvatar;
-      if(avatarsData.familyPhoto) document.getElementById('familyPhoto').src = avatarsData.familyPhoto;
-    }
-  } catch(e) { console.log(e); }
-  document.getElementById('loadingUi').classList.add('hidden');
-  updateUIElements();
-
-  // ENGINE ĐỒNG BỘ 10 GIÂY KHÔNG ĐỔI
   setInterval(async () => {
     await cloudFetchSilent();
   }, 10000); 
