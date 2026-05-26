@@ -55,15 +55,17 @@
   </div>
 
   <div class="block md:hidden bg-white border border-slate-200 rounded-2xl p-1.5 flex justify-between items-center shadow-md mb-6 sticky top-2 z-40">
-    <button onclick="switchTab('tab-nhim')" id="btn-tab-nhim" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-pink-500 text-white shadow-sm">👧 Nhím</button>
-    <button onclick="switchTab('tab-soc')" id="btn-tab-soc" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500">👧 Sóc</button>
-    
-    <button onclick="switchTab('tab-admin')" id="btn-tab-admin" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500 relative">
-      👨‍👩‍👧 Duyệt
-      <span id="badgeCountMobile" class="absolute -top-1 right-2 bg-red-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center hidden animate-bounce">0</span>
+    <button onclick="switchTab('tab-nhim')" id="btn-tab-nhim" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all relative bg-pink-500 text-white shadow-sm">
+      Nhím <span id="badgeNhimMobile" class="absolute -top-1 -right-0.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center hidden">0</span>
     </button>
-    
-    <button onclick="switchTab('tab-history')" id="btn-tab-history" class="flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500">🏆 Lịch sử</button>
+    <button onclick="switchTab('tab-soc')" id="btn-tab-soc" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all relative text-slate-500">
+      Sóc <span id="badgeSocMobile" class="absolute -top-1 -right-0.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center hidden">0</span>
+    </button>
+    <button onclick="switchTab('tab-shop')" id="btn-tab-shop" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500">🎁 Quà</button>
+    <button onclick="switchTab('tab-admin')" id="btn-tab-admin" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500 relative">
+      Duyệt <span id="badgeCountMobile" class="absolute -top-1 -right-0.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center hidden animate-bounce">0</span>
+    </button>
+    <button onclick="switchTab('tab-history')" id="btn-tab-history" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500">🏆 Lịch sử</button>
   </div>
 
   <div id="section-giao-viec" class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md mb-6 hidden md:block">
@@ -91,7 +93,6 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
-    
     <div id="box-nhim" class="bg-gradient-to-b from-pink-50/80 to-white border-2 border-pink-200 rounded-3xl card-shadow-pink p-6 text-center block">
       <div class="flex items-center justify-between mb-4">
         <span class="text-2xl font-black text-pink-600">👧 Nhím</span>
@@ -111,21 +112,29 @@
 
     <div id="box-team" class="bg-gradient-to-b from-purple-50/80 to-white border-2 border-purple-200 rounded-3xl shadow-lg p-6 relative lg:sticky lg:top-4 hidden md:block">
       <div class="text-center mb-4">
-        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUỸ ĐIỂM CHUNG TEAM</span>
+        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUY ĐIỂM CHUNG TEAM</span>
         <div class="text-6xl font-black text-purple-700 tracking-tight mt-2.5" id="teamScore">0</div>
       </div>
       <details open class="group border border-purple-100 rounded-2xl overflow-hidden bg-white shadow-sm mb-3">
-        <summary class="list-none cursor-pointer p-4 font-extrabold text-sm text-purple-900 flex justify-between items-center bg-purple-50 border-b border-purple-100 select-none">🎁 Đổi quà (Tự động trừ) <span class="transition-transform group-open:rotate-180 text-purple-500 text-xs">▼</span></summary>
-        <div class="p-2 space-y-1.5 max-h-64 overflow-y-auto bg-slate-50/40">
-          <button onclick="redeemReward(50, '📱 Dùng thêm 30 phút điện thoại')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm"><span>📱 Thêm 30p điện thoại</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">50 đ</span></button>
-          <button onclick="redeemReward(100, '🍔 Ăn món thích')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm"><span>🍔 Ăn món yêu thích</span><span class="font-bold text-purple-600 bg-indigo-50 px-2 py-0.5 rounded-md">100 đ</span></button>
-          <button onclick="redeemReward(200, '🎬 Xem phim')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm"><span>🎬 Xem phim giải trí</span><span class="font-bold text-purple-600 bg-indigo-50 px-2 py-0.5 rounded-md">200 đ</span></button>
+        <summary class="list-none cursor-pointer p-4 font-extrabold text-sm text-purple-900 flex justify-between items-center bg-purple-50 border-b border-purple-100 select-none">🎁 Kho phần thưởng muốn đổi <span class="transition-transform group-open:rotate-180 text-purple-500 text-xs">▼</span></summary>
+        <div class="p-2 space-y-1.5 max-h-72 overflow-y-auto bg-slate-50/40">
+          
+          <button onclick="requestReward(50, '📱 Dùng thêm 30 phút điện thoại')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
+            <span>📱 Thêm 30p điện thoại</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">50 đ</span>
+          </button>
+          <button onclick="requestReward(100, '🍔 Ăn món thích')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
+            <span>🍔 Ăn món yêu thích</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">100 đ</span>
+          </button>
+          <button onclick="requestReward(200, '🎬 Xem phim')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
+            <span>🎬 Xem phim giải trí</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">200 đ</span>
+          </button>
+          
           <div class="pt-3 border-t border-purple-100 space-y-1.5 bg-white p-2.5 rounded-xl border border-purple-100/50">
-            <div class="text-[11px] font-black text-purple-600 px-1">🤝 Gửi đề xuất quà thương lượng:</div>
-            <input id="customRewardName" type="text" placeholder="Tên món quà con ao ước..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:outline-none">
+            <div class="text-[11px] font-black text-purple-600 px-1">🤝 Thương lượng món quà khác:</div>
+            <input id="customRewardName" type="text" placeholder="Món quà con muốn đổi..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:outline-none">
             <div class="flex gap-1.5">
               <input id="customRewardPoints" type="number" placeholder="Điểm đổi" class="w-1/2 bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-bold text-center focus:outline-none">
-              <button onclick="requestCustomReward()" class="w-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs rounded-lg p-2 shadow-sm">📢 Gửi bố mẹ</button>
+              <button onclick="requestCustomReward()" class="w-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs rounded-lg p-2 shadow-sm">📢 Đổi quà</button>
             </div>
           </div>
         </div>
@@ -151,8 +160,8 @@
     </div>
   </div>
 
-  <div id="rewardApprovalWrapper" class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 hidden shadow-sm relative">
-    <h3 class="text-sm font-black text-amber-800 mb-2 flex items-center gap-1.5">🔔 Yêu cầu thương lượng đổi quà cần bố mẹ cấp phép:</h3>
+  <div id="rewardApprovalWrapper" class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 hidden shadow-sm">
+    <h3 class="text-sm font-black text-amber-800 mb-2 flex items-center gap-1.5">🔔 Yêu cầu đổi quà đang chờ bố mẹ phê duyệt:</h3>
     <div id="rewardApprovalList" class="space-y-2"></div>
   </div>
 
@@ -195,7 +204,7 @@ const ADMIN_PASSWORD_PIN = "1979";
 
 let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
-let activeTabMobile = "tab-nhim"; // Mặc định mở tab Nhím trên di động
+let activeTabMobile = "tab-nhim"; 
 
 function updateClock() {
   const now = new Date();
@@ -219,39 +228,36 @@ function verifyAdminIdentity() {
   return false;
 }
 
-// 🕹️ HÀM CHUYỂN TAB ỨNG DỤNG LINH HOẠT TRÊN DI ĐỘNG
+// 🕹️ HÀM SWITCH TAB 5 PHÂN HỆ CHO DI ĐỘNG KHÔNG CÒN BỊ RỐI
 function switchTab(tabId) {
-  if (window.innerWidth >= 768) return; // Nếu màn hình máy tính thì không chạy bộ lọc tab
+  if (window.innerWidth >= 768) return; 
   activeTabMobile = tabId;
   
-  // Reset trạng thái active của tất cả các nút tab
-  const tabs = ['tab-nhim', 'tab-soc', 'tab-admin', 'tab-history'];
+  const tabs = ['tab-nhim', 'tab-soc', 'tab-shop', 'tab-admin', 'tab-history'];
   tabs.forEach(t => {
-    const btn = document.getElementById(`btn-${t}`);
-    btn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 text-slate-500 relative";
+    document.getElementById(`btn-${t}`).className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500 relative";
   });
 
-  // Gán màu nổi bật cho tab đang chọn
   const activeBtn = document.getElementById(`btn-${tabId}`);
-  if(tabId === 'tab-nhim') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-pink-500 text-white shadow-sm";
-  if(tabId === 'tab-soc') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-sky-500 text-white shadow-sm";
-  if(tabId === 'tab-admin') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-purple-600 text-white shadow-sm relative";
-  if(tabId === 'tab-history') activeBtn.className = "flex-1 py-3 text-center text-xs font-black rounded-xl transition-all duration-200 bg-slate-800 text-white shadow-sm";
+  if(tabId === 'tab-nhim') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-pink-500 text-white shadow-sm relative";
+  if(tabId === 'tab-soc') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-sky-500 text-white shadow-sm relative";
+  if(tabId === 'tab-shop') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-amber-500 text-white shadow-sm relative";
+  if(tabId === 'tab-admin') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-purple-600 text-white shadow-sm relative";
+  if(tabId === 'tab-history') activeBtn.className = "flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all bg-slate-800 text-white shadow-sm";
 
-  // Ẩn / Hiện các khối giao diện tương ứng
+  // Cấu hình ẩn hiện các block
   document.getElementById('box-nhim').style.display = (tabId === 'tab-nhim') ? 'block' : 'none';
   document.getElementById('area-task-nhim').style.display = (tabId === 'tab-nhim') ? 'block' : 'none';
   
   document.getElementById('box-soc').style.display = (tabId === 'tab-soc') ? 'block' : 'none';
   document.getElementById('area-task-soc').style.display = (tabId === 'tab-soc') ? 'block' : 'none';
 
+  document.getElementById('box-team').style.display = (tabId === 'tab-shop' || tabId === 'tab-admin') ? 'block' : 'none';
   document.getElementById('section-giao-viec').style.display = (tabId === 'tab-admin') ? 'block' : 'none';
-  document.getElementById('box-team').style.display = (tabId === 'tab-admin') ? 'block' : 'none';
   document.getElementById('rewardApprovalWrapper').style.setProperty('display', (tabId === 'tab-admin' && pendingRewards.length > 0) ? 'block' : 'none', 'important');
 
   document.getElementById('section-history').style.display = (tabId === 'tab-history') ? 'block' : 'none';
   
-  // Phân chia khối nhiệm vụ khi ở tab Admin để hiển thị toàn bộ việc chờ duyệt
   if (tabId === 'tab-admin') {
     document.getElementById('section-nhiem-vu').style.display = 'grid';
     document.getElementById('area-task-nhim').style.display = 'block';
@@ -263,10 +269,8 @@ function switchTab(tabId) {
   }
 }
 
-// Khởi chạy kiểm tra kích thước màn hình để tự động cấu hình giao diện
 function checkResponsiveLayout() {
   if (window.innerWidth >= 768) {
-    // Trên máy tính: Hiện tất cả mọi khối
     document.getElementById('box-nhim').style.display = 'block';
     document.getElementById('area-task-nhim').style.display = 'block';
     document.getElementById('box-soc').style.display = 'block';
@@ -277,7 +281,6 @@ function checkResponsiveLayout() {
     document.getElementById('section-history').style.display = 'block';
     if(pendingRewards.length > 0) document.getElementById('rewardApprovalWrapper').style.setProperty('display', 'block', 'important');
   } else {
-    // Trên điện thoại: Đưa về tab đang chọn
     switchTab(activeTabMobile);
   }
 }
@@ -330,21 +333,32 @@ function updateUIElements() {
   document.getElementById('littleScore').innerText = littleScore;
   document.getElementById('teamScore').innerText = sisterScore + littleScore;
   
-  // 🔴 TÍNH TOÁN SỐ LƯỢNG TIN NHẮN THÔNG BÁO CHỜ DUYỆT (Việc con báo xong + Quà chờ cấp phép)
+  // 🔴 THÔNG BÁO CHO BỐ MẸ (Tab Duyệt)
   let countTasksWaiting = tasks.filter(t => t.completed && !t.approved).length;
   let countRewardsWaiting = pendingRewards.length;
-  let totalWaiting = countTasksWaiting + countRewardsWaiting;
+  let totalWaitingAdmin = countTasksWaiting + countRewardsWaiting;
 
   const badgeMobile = document.getElementById('badgeCountMobile');
-  if (totalWaiting > 0) {
-    badgeMobile.innerText = totalWaiting;
-    badgeMobile.classList.remove('hidden');
-  } else {
-    badgeMobile.classList.add('hidden');
-  }
+  if (totalWaitingAdmin > 0) {
+    badgeMobile.innerText = totalWaitingAdmin; badgeMobile.classList.remove('hidden');
+  } else { badgeMobile.classList.add('hidden'); }
+
+  // 🔴 THÔNG BÁO CHO CÁC CON (Tab Nhím / Tab Sóc - Số việc chưa làm)
+  let uncompletedNhim = tasks.filter(t => t.assignedTo === 'sister' && !t.completed).length;
+  let uncompletedSoc = tasks.filter(t => t.assignedTo === 'little' && !t.completed).length;
+
+  const badgeNhim = document.getElementById('badgeNhimMobile');
+  if (uncompletedNhim > 0) {
+    badgeNhim.innerText = uncompletedNhim; badgeNhim.classList.remove('hidden');
+  } else { badgeNhim.classList.add('hidden'); }
+
+  const badgeSoc = document.getElementById('badgeSocMobile');
+  if (uncompletedSoc > 0) {
+    badgeSoc.innerText = uncompletedSoc; badgeSoc.classList.remove('hidden');
+  } else { badgeSoc.classList.add('hidden'); }
 
   renderTasks(); renderPendingRewards(); renderHistory();
-  checkResponsiveLayout(); // Đảm bảo cấu hình ẩn hiện khối chuẩn xác theo mảng dữ liệu mới nhận
+  checkResponsiveLayout(); 
 }
 
 async function addTask() {
@@ -423,25 +437,21 @@ function renderTasks() {
   if(socCount === 0) socList.innerHTML = '<div class="text-xs text-slate-400 text-center py-4 italic">Hôm nay Sóc chưa có việc gì!</div>';
 }
 
-async function redeemReward(points, rewardName) {
-  const total = sisterScore + littleScore; if(total < points) { alert('❌ Điểm tích lũy của Team hiện tại không đủ!'); return; }
-  if(!confirm(`Xác nhận dùng ${points} điểm của Team để đổi ngay phần quà [${rewardName}]?`)) return;
-  executeScoreDeduction(points); saveHistoryLocal({ name: rewardName, points: points }, 'reward');
-  await cloudPush(); alert('🎉 Đổi quà thành công!');
-}
+// 🔐 KHÓA BẢO MẬT: BẤT KỲ QUÀ CỐ ĐỊNH NÀO CŨNG PHẢI ĐẨY VÀO HÀNG ĐỢI CHỜ DUYỆT CHỨ KHÔNG ĐƯỢC TRỪ THẲNG ĐIỂM NGHIỄM NHIÊN
+async function requestReward(points, rewardName) {
+  const total = sisterScore + littleScore; 
+  if(total < points) { alert('❌ Điểm tích lũy hiện tại của cả đội chưa đủ để gửi yêu cầu đổi món quà này!'); return; }
+  if(!confirm(`Con xác nhận dùng ${points} điểm chung để gửi đề xuất đổi quà [${rewardName}] lên bố mẹ không?`)) return;
 
-function executeScoreDeduction(points) {
-  const total = sisterScore + littleScore;
-  if (total === 0) { sisterScore = 0; littleScore = 0; } else {
-    const sisterRatio = sisterScore / total; const littleRatio = littleScore / total;
-    sisterScore = Math.max(0, Math.round(sisterScore - (points * sisterRatio))); littleScore = Math.max(0, Math.round(littleScore - (points * littleRatio)));
-  }
+  pendingRewards.push({ name: rewardName, points: points });
+  await cloudPush(); 
+  alert('📢 Đã gửi đề xuất thành công! Con hãy đợi bố mẹ duyệt cho phép nhé.');
 }
 
 async function requestCustomReward() {
   const name = document.getElementById('customRewardName').value.trim(); const points = Number(document.getElementById('customRewardPoints').value);
   if(!name || points <= 0) { alert('⚠️ Hãy điền đầy đủ thông tin!'); return; }
-  pendingRewards.push({ name: name, points: points });
+  pendingRewards.push({ name: `🤝 Thương lượng: ${name}`, points: points });
   document.getElementById('customRewardName').value = ""; document.getElementById('customRewardPoints').value = "";
   await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
 }
@@ -452,7 +462,7 @@ function renderPendingRewards() {
   wrapper.classList.remove('hidden');
   container.innerHTML = pendingRewards.map((reward, index) => `
     <div class="bg-white border border-amber-200 rounded-xl p-3 flex justify-between items-center text-xs shadow-sm">
-      <div><span class="text-amber-800 font-bold">🤝 Đề xuất thương lượng:</span> <span class="font-extrabold text-slate-800 text-sm">${reward.name}</span><span class="block text-[10px] text-slate-400 mt-0.5">Giá trị quỹ chung: <b class="text-amber-600">${reward.points}đ</b></span></div>
+      <div><span class="text-amber-800 font-bold">🎁 Yêu cầu đổi quà:</span> <span class="font-extrabold text-slate-800 text-sm">${reward.name}</span><span class="block text-[10px] text-slate-400 mt-0.5">Giá trị quỹ chung cần trừ: <b class="text-amber-600">${reward.points}đ</b></span></div>
       <div class="flex gap-1.5">
         <button onclick="approveCustomReward(${index})" class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-black shadow-sm">👍 Cho phép</button>
         <button onclick="rejectCustomReward(${index})" class="px-2 py-1.5 bg-slate-200 text-slate-600 rounded-lg font-bold">❌ Từ chối</button>
@@ -462,15 +472,18 @@ function renderPendingRewards() {
 
 async function approveCustomReward(index) {
   const reward = pendingRewards[index]; const total = sisterScore + littleScore;
-  if (total < reward.points) { alert('❌ Điểm hiện tại không đủ!'); return; }
+  if (total < reward.points) { alert('❌ Điểm quỹ chung hiện không đủ để phê duyệt phần quà này!'); return; }
   if (!verifyAdminIdentity()) return;
-  executeScoreDeduction(reward.points); saveHistoryLocal({ name: `🤝 Thương lượng: ${reward.name}`, points: reward.points }, 'reward');
+  
+  executeScoreDeduction(reward.points); 
+  saveHistoryLocal({ name: reward.name, points: reward.points }, 'reward');
   pendingRewards.splice(index, 1); await cloudPush();
+  alert('✅ Đã phê duyệt cấp quà và khấu trừ điểm thành công!');
 }
 
 async function rejectCustomReward(index) {
   if (!verifyAdminIdentity()) return;
-  if (confirm('Bố mẹ từ chối yêu cầu thương lượng quà này?')) { pendingRewards.splice(index, 1); await cloudPush(); }
+  if (confirm('Bố mẹ từ chối yêu cầu đổi quà này của các con?')) { pendingRewards.splice(index, 1); await cloudPush(); }
 }
 
 function openPhotoModal(base64Src) { document.getElementById('modalImg').src = base64Src; document.getElementById('photoModal').classList.remove('hidden'); }
@@ -574,7 +587,6 @@ async function initSystem() {
   await cloudFetchWithLoading();
   await autoResetDailyTasks();
 
-  // ENGINE ĐỒNG BỘ 10 GIÂY LIÊN TỤC
   setInterval(async () => {
     await cloudFetchSilent();
   }, 10000); 
