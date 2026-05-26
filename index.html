@@ -49,16 +49,158 @@
         </div>
       </div>
       <button onclick="secureLoadAvatar('familyPhoto')" class="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-900 text-white px-2 py-1 rounded-md text-[10px] font-bold transition shadow-md">
-        📷 Đổi ảnh gia đình
         📷
       </button>
     </div>
   </div>
-@@ -200,399 +200,399 @@
+
+  <div class="block md:hidden bg-white border border-slate-200 rounded-2xl p-1.5 flex justify-between items-center shadow-md mb-6 sticky top-2 z-40">
+    <button onclick="switchTab('tab-nhim')" id="btn-tab-nhim" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all relative bg-pink-500 text-white shadow-sm">
+      Nhím <span id="badgeNhimMobile" class="absolute -top-1 -right-0.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center hidden">0</span>
+    </button>
+    <button onclick="switchTab('tab-soc')" id="btn-tab-soc" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all relative text-slate-500">
+      Sóc <span id="badgeSocMobile" class="absolute -top-1 -right-0.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center hidden">0</span>
+    </button>
+    <button onclick="switchTab('tab-shop')" id="btn-tab-shop" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500">🎁 Quà</button>
+    <button onclick="switchTab('tab-admin')" id="btn-tab-admin" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500 relative">
+      Duyệt <span id="badgeCountMobile" class="absolute -top-1 -right-0.5 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center hidden animate-bounce">0</span>
+    </button>
+    <button onclick="switchTab('tab-history')" id="btn-tab-history" class="flex-1 py-2.5 text-center text-[11px] font-black rounded-xl transition-all text-slate-500">🏆 Lịch sử</button>
+  </div>
+
+  <div id="section-giao-viec" class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md mb-6 hidden md:block">
+    <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">📋 Bố/Mẹ giao việc hôm nay</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <select id="assignPerson" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none">
+        <option value="sister">👧 Giao cho Nhím</option>
+        <option value="little">👧 Giao cho Sóc</option>
+      </select>
+      <select id="taskTemplate" onchange="handleTemplateChange()" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none">
+        <option value="custom">✍️ Tự nhập việc khác...</option>
+        <option value="🧹 Quét nhà|10">🧹 Quét nhà - 10 điểm</option>
+        <option value="🍚 Nấu cơm|20">🍚 Nấu cơm - 20 điểm</option>
+        <option value="🍽️ Rửa bát|15">🍽️ Rửa bát - 15 điểm</option>
+        <option value="👕 Gấp quần áo|10">👕 Gấp quần áo - 10 điểm</option>
+        <option value="🪴 Tưới cây|5">🪴 Tưới cây - 5 điểm</option>
+        <option value="📚 Dọn góc học tập|10">📚 Dọn góc học tập - 10 điểm</option>
+      </select>
+      <div id="customTaskWrapper" class="flex gap-2 col-span-1">
+        <input id="customTaskName" type="text" placeholder="Tên công việc..." class="w-2/3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium focus:outline-none">
+        <input id="customTaskPoints" type="number" placeholder="Điểm" class="w-1/3 bg-slate-50 border border-slate-200 rounded-xl px-2 py-3 text-sm font-bold text-center focus:outline-none">
+      </div>
+      <button onclick="addTask()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-sm rounded-xl py-3 shadow-md transition-all">➕ Giao việc</button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
+    <div id="box-nhim" class="bg-gradient-to-b from-pink-50/80 to-white border-2 border-pink-200 rounded-3xl card-shadow-pink p-6 text-center block">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-2xl font-black text-pink-600">👧 Nhím</span>
+        <span class="text-xs bg-pink-500 text-white font-black px-3 py-1 rounded-full shadow-sm">Lớp 9</span>
+      </div>
+      <div class="relative group mx-auto w-28 h-28 mb-4">
+        <img id="nhimAvatar" src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" class="w-28 h-28 rounded-full object-cover border-4 border-pink-300 shadow-md" />
+        <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5">
+          <button onclick="secureLoadAvatar('nhimAvatar')" class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold shadow">📷</button>
+          <button onclick="secureRemoveAvatar('nhimAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
+        </div>
+      </div>
+      <div class="text-5xl font-black text-pink-600 tracking-tight" id="sisterScore">0</div>
+      <div class="text-xs text-pink-400 font-bold uppercase tracking-wider mt-1">Điểm tích lũy cá nhân</div>
+      <div class="mt-5 pt-4 border-t border-pink-100 text-left text-xs bg-white/60 p-3 rounded-xl border border-pink-100/50"><div class="font-bold text-pink-700">📏 Mục tiêu: Tăng chiều cao</div></div>
+    </div>
+
+    <div id="box-team" class="bg-gradient-to-b from-purple-50/80 to-white border-2 border-purple-200 rounded-3xl shadow-lg p-6 relative lg:sticky lg:top-4 hidden md:block">
+      <div class="text-center mb-4">
+        <span class="text-xs font-black text-purple-600 uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">⭐ QUY ĐIỂM CHUNG TEAM</span>
+        <div class="text-6xl font-black text-purple-700 tracking-tight mt-2.5" id="teamScore">0</div>
+      </div>
+      <details open class="group border border-purple-100 rounded-2xl overflow-hidden bg-white shadow-sm mb-3">
+        <summary class="list-none cursor-pointer p-4 font-extrabold text-sm text-purple-900 flex justify-between items-center bg-purple-50 border-b border-purple-100 select-none">🎁 Kho phần thưởng muốn đổi <span class="transition-transform group-open:rotate-180 text-purple-500 text-xs">▼</span></summary>
+        <div class="p-2 space-y-1.5 max-h-72 overflow-y-auto bg-slate-50/40">
+
+          <button onclick="requestReward(50, '📱 Dùng thêm 30 phút điện thoại')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
+            <span>📱 Thêm 30p điện thoại</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">50 đ</span>
+          </button>
+          <button onclick="requestReward(100, '🍔 Ăn món thích')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
+            <span>🍔 Ăn món yêu thích</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">100 đ</span>
+          </button>
+          <button onclick="requestReward(200, '🎬 Xem phim')" class="w-full text-left bg-white border border-slate-100 p-2.5 rounded-xl text-xs font-semibold flex justify-between items-center hover:border-purple-200 hover:bg-purple-50/20 shadow-sm">
+            <span>🎬 Xem phim giải trí</span><span class="font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">200 đ</span>
+          </button>
+
+          <div class="pt-3 border-t border-purple-100 space-y-1.5 bg-white p-2.5 rounded-xl border border-purple-100/50">
+            <div class="text-[11px] font-black text-purple-600 px-1">🤝 Thương lượng món quà khác:</div>
+            <input id="customRewardName" type="text" placeholder="Món quà con muốn đổi..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:outline-none">
+            <div class="flex gap-1.5">
+              <input id="customRewardPoints" type="number" placeholder="Điểm đổi" class="w-1/2 bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-bold text-center focus:outline-none">
+              <button onclick="requestCustomReward()" class="w-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs rounded-lg p-2 shadow-sm">📢 Đổi quà</button>
+            </div>
+          </div>
+        </div>
+      </details>
+      <button onclick="secureResetAllData()" class="w-full border border-red-200 hover:bg-red-50 text-red-600 rounded-xl py-2 text-xs font-bold transition">🗑 Reset dữ liệu</button>
+    </div>
+
+    <div id="box-soc" class="bg-gradient-to-b from-sky-50/80 to-white border-2 border-sky-200 rounded-3xl card-shadow-blue p-6 text-center block">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-2xl font-black text-sky-600">👧 Sóc</span>
+        <span class="text-xs bg-sky-500 text-white font-black px-3 py-1 rounded-full shadow-sm">Lớp 6</span>
+      </div>
+      <div class="relative group mx-auto w-28 h-28 mb-4">
+        <img id="socAvatar" src="https://cdn-icons-png.flaticon.com/512/4140/4140051.png" class="w-28 h-28 rounded-full object-cover border-4 border-sky-300 shadow-md" />
+        <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5">
+          <button onclick="secureLoadAvatar('socAvatar')" class="p-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold shadow">📷</button>
+          <button onclick="secureRemoveAvatar('socAvatar')" class="p-1.5 bg-red-500 text-white rounded-lg text-xs shadow">🗑</button>
+        </div>
+      </div>
+      <div class="text-5xl font-black text-sky-600 tracking-tight" id="littleScore">0</div>
+      <div class="text-xs text-sky-400 font-bold uppercase tracking-wider mt-1">Điểm tích lũy cá nhân</div>
+      <div class="mt-5 pt-4 border-t border-sky-100 text-left text-xs bg-white/60 p-3 rounded-xl border border-sky-100/50"><div class="font-bold text-sky-700">🌱 Tiêu chí: Học tập • Tự lập • Vận động</div></div>
+    </div>
+  </div>
+
+  <div id="rewardApprovalWrapper" class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 hidden shadow-sm">
+    <h3 class="text-sm font-black text-amber-800 mb-2 flex items-center gap-1.5">🔔 Yêu cầu đổi quà đang chờ bố mẹ phê duyệt:</h3>
+    <div id="rewardApprovalList" class="space-y-2"></div>
+  </div>
+
+  <div id="section-nhiem-vu" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div id="area-task-nhim" class="bg-white border-2 border-pink-100 rounded-2xl p-5 shadow-sm block">
+      <h2 class="text-lg font-black text-pink-600 mb-4 flex items-center justify-between border-b border-pink-50 pb-2">
+        <span>📌 Việc cần làm của Nhím</span>
+        <span id="nhimTaskCount" class="text-xs bg-pink-500 text-white px-2.5 py-0.5 rounded-full font-black">0</span>
+      </h2>
+      <div id="nhimTaskList" class="space-y-3"></div>
+    </div>
+    <div id="area-task-soc" class="bg-white border-2 border-sky-100 rounded-2xl p-5 shadow-sm block">
+      <h2 class="text-lg font-black text-sky-600 mb-4 flex items-center justify-between border-b border-sky-50 pb-2">
+        <span>📌 Việc cần làm của Sóc</span>
+        <span id="socTaskCount" class="text-xs bg-sky-500 text-white px-2.5 py-0.5 rounded-full font-black">0</span>
+      </h2>
+      <div id="socTaskList" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <div id="section-history" class="bg-white border border-slate-100 rounded-2xl p-5 shadow-md block">
+    <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">🏆 Lịch sử hoàn thành & Kỷ luật ngày hè</h2>
+    <div id="historyContainer" class="max-h-60 overflow-y-auto pr-1 space-y-2.5">
+      <div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào được ghi nhận.</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="photoModal" onclick="closePhotoModal()" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+  <img id="modalImg" src="" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl border border-white/10 object-contain">
+</div>
+
+<input type="file" id="secureImageInput" hidden accept="image/*">
+
 <script>
 const CONFIG_DATABASE_URL = "https://script.google.com/macros/s/AKfycbz1mwg470fhqS1UtF8unQUpDlDoAamZDKkYo2OUaCieHPUpTlRq7s-IS3qvfnXEh_P2_w/exec";
 
-const ADMIN_PASSWORD_PIN = "1979";
+const ADMIN_PASSWORD_PIN = "abcd";
 
 let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
@@ -453,4 +595,3 @@ initSystem();
 </script>
 
 </body>
-</html>
