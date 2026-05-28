@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nhím Sóc Family</title>
+  <title>Summer Team Family</title>
   
   <link rel="icon" type="image/jpeg" sizes="180x180" href="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=180&h=180&fit=crop">
   <link rel="apple-touch-icon" sizes="180x180" href="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=180&h=180&fit=crop">
@@ -25,7 +25,7 @@
 <div id="loginGateUi" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-4">
   <div class="bg-white/10 backdrop-blur-xl border border-white/20 p-6 md:p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center text-white">
     <div class="text-4xl mb-3">🏡</div>
-    <h2 class="text-xl font-black tracking-tight mb-1">NHÍM SÓC FAMILY</h2>
+    <h2 class="text-xl font-black tracking-tight mb-1">SUMMER TEAM FAMILY</h2>
     <p class="text-xs text-white/70 mb-5 font-semibold">Vui lòng nhập mật mã để vào không gian gia đình</p>
     
     <input id="appPasswordInput" type="password" placeholder="••••••" class="w-full bg-white/20 border border-white/20 rounded-2xl p-4 text-center text-xl font-black tracking-widest text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-300 mb-4 shadow-inner">
@@ -170,6 +170,11 @@
     </div>
   </div>
 
+<div id="rewardConfirmWrapper" class="bg-cyan-50 border-2 border-cyan-200 rounded-2xl p-4 mb-6 hidden shadow-sm"> 
+  <h3 class="text-sm font-black text-cyan-800 mb-2"> 🤝 Yêu cầu chờ người còn lại đồng ý: </h3> 
+  <div id="rewardConfirmList" class="space-y-2"></div> 
+</div>
+
   <div id="rewardApprovalWrapper" class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 hidden shadow-sm">
     <h3 class="text-sm font-black text-amber-800 mb-2 flex items-center gap-1.5">🔔 Yêu cầu đổi quà đang chờ bố mẹ phê duyệt:</h3>
     <div id="rewardApprovalList" class="space-y-2"></div>
@@ -245,7 +250,12 @@ window.firebaseOnValue = onValue;
 const APP_LOGIN_PASSWORD = "201215"; // Mật mã vào cổng ứng dụng ban đầu
 const ADMIN_PASSWORD_PIN = "abcd";   // Mật mã phê duyệt/duyệt việc của Bố Mẹ
 
-let sisterScore = 0; let littleScore = 0; let tasks = []; let pendingRewards = []; let taskHistory = [];
+let sisterScore = 0; 
+let littleScore = 0; 
+let tasks = []; 
+let pendingRewards = []; 
+let rewardConfirmations = []; 
+let taskHistory = [];
 let avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
 let activeTabMobile = "tab-nhim"; 
 let isAudioInitialized = false;
@@ -407,8 +417,7 @@ if (typeof cloudData.littleScore !== 'undefined') {
 
       tasks = cloudData.tasks || [];
 
-      pendingRewards =
-        cloudData.pendingRewards || [];
+      rewardConfirmations = cloudData.rewardConfirmations || [];
 
       taskHistory =
         cloudData.taskHistory || [];
@@ -460,15 +469,16 @@ console.time("firebasePush");
     taskHistory = taskHistory.slice(0, 50);
   }
 
-  const payload = {
-    initialized: true,
-    sisterScore,
-    littleScore,
-    tasks,
-    pendingRewards,
-    taskHistory,
-    avatarsData,
-    lastUpdate: Date.now()
+  const payload = { 
+    initialized: true, 
+    sisterScore, 
+    littleScore, 
+    tasks, 
+    pendingRewards, 
+    rewardConfirmations, 
+    taskHistory, 
+    avatarsData, 
+    lastUpdate: Date.now() 
   };
 
   try {
@@ -512,7 +522,7 @@ function updateUIElements() {
   const badgeSoc = document.getElementById('badgeSocMobile');
   if (uncompletedSoc > 0) { badgeSoc.innerText = uncompletedSoc; badgeSoc.classList.remove('hidden'); } else { badgeSoc.classList.add('hidden'); }
 
-  renderTasks(); renderPendingRewards(); renderHistory(); checkResponsiveLayout(); 
+  renderTasks(); renderRewardConfirmations(); renderPendingRewards(); renderHistory();
 }
 
 async function addTask() {
@@ -580,11 +590,9 @@ function renderTasks() {
   if(socCount === 0) socList.innerHTML = '<div class="text-xs text-slate-400 text-center py-4 italic">Hôm nay Sóc chưa có việc gì!</div>';
 }
 
-async function requestReward(points, rewardName) {
-  const total = sisterScore + littleScore; if(total < points) { alert('❌ Điểm tích lũy hiện tại của cả đội chưa đủ!'); return; }
-  if(!confirm(`Con xác nhận muốn dùng ${points} điểm chung để đề xuất đổi quà [${rewardName}] không?`)) return;
-  pendingRewards.push({ name: rewardName, points: points }); await cloudPush(); alert('📢 Đã gửi đề xuất! Con đợi bố mẹ duyệt nhé.');
-}
+async function requestReward(points, rewardName) { 
+  const total = sisterScore + littleScore; 
+  if(total < points) { alert('❌ Điểm tích lũy hiện tại chưa đủ!'); return; } const requester = confirm( "👧 Người đang đổi quà là Nhím?\n\n" + "Bấm:\n" + "OK = Nhím\n" + "Cancel = Sóc" ) ? 'Nhím' : 'Sóc'; rewardConfirmations.push({ id: Date.now(), requester, rewardName, points, siblingApproved: false }); await cloudPush(); alert( `📢 ${requester} đã gửi yêu cầu đổi quà!\n\n` + "Người còn lại cần đồng ý trước khi bố mẹ duyệt." ); }
 
 async function requestCustomReward() {
   const name = document.getElementById('customRewardName').value.trim(); const points = Number(document.getElementById('customRewardPoints').value);
@@ -594,7 +602,20 @@ async function requestCustomReward() {
   await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
 }
 
-function renderPendingRewards() {
+function renderRewardConfirmations() { 
+  const wrapper = document.getElementById('rewardConfirmWrapper'); const container = document.getElementById('rewardConfirmList'); 
+  if(rewardConfirmations.length === 0) { wrapper.classList.add('hidden'); return; } 
+  wrapper.classList.remove('hidden'); 
+  container.innerHTML = rewardConfirmations.map((r, index) => ` 
+  <div class="bg-white border border-cyan-200 rounded-xl p-3 flex justify-between items-center text-xs shadow-sm"> 
+    <div> <span class="font-bold text-cyan-700"> 👧 ${r.requester} </span> muốn đổi: <b>${r.rewardName}</b> 
+      <div class="text-[10px] text-slate-400 mt-1"> Cần người còn lại đồng ý </div> </div> <button onclick="approveRewardConfirmation(${index})" class="px-3 py-1.5 bg-cyan-600 text-white rounded-lg font-black" > 🤝 Đồng ý </button> </div> `).join(''); }
+
+async function approveRewardConfirmation(index) { 
+  const request = rewardConfirmations[index]; pendingRewards.push({ name: request.rewardName, points: request.points }); 
+  rewardConfirmations.splice(index, 1); playSound(soundApprove); await cloudPush(); alert( "✅ Đã đồng thuận!\nBây giờ bố mẹ có thể duyệt." ); }
+
+      function renderPendingRewards() {
   const wrapper = document.getElementById('rewardApprovalWrapper'); const container = document.getElementById('rewardApprovalList');
   if (pendingRewards.length === 0) { wrapper.classList.add('hidden'); return; }
   wrapper.classList.remove('hidden');
