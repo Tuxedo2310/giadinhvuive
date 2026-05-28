@@ -364,18 +364,46 @@ function startRealtimeSync() {
     (snapshot) => {
 
       const cloudData = snapshot.val();
-      localStorage.setItem(
-  "backupFirebaseData",
-  JSON.stringify(cloudData)
-);
 
-      if (!cloudData) return;
+      if (cloudData) {
+        localStorage.setItem(
+          "backupFirebaseData",
+          JSON.stringify(cloudData)
+        );
+      }
+
+      if (!cloudData) {
+
+        const backup = localStorage.getItem("backupFirebaseData");
+
+        if (backup) {
+
+          const parsed = JSON.parse(backup);
+
+          sisterScore = parsed.sisterScore || 0;
+          littleScore = parsed.littleScore || 0;
+          tasks = parsed.tasks || [];
+          pendingRewards = parsed.pendingRewards || [];
+          taskHistory = parsed.taskHistory || [];
+          avatarsData = parsed.avatarsData || {};
+
+          console.log("♻️ Khôi phục dữ liệu từ backup local");
+
+          updateUIElements();
+        }
+
+        return;
+      }
 
       console.log("🔥 Firebase realtime update");
 
-      sisterScore = cloudData.sisterScore || 0;
+      if (typeof cloudData.sisterScore !== 'undefined') {
+  sisterScore = cloudData.sisterScore;
+}
 
-      littleScore = cloudData.littleScore || 0;
+if (typeof cloudData.littleScore !== 'undefined') {
+  littleScore = cloudData.littleScore;
+}
 
       tasks = cloudData.tasks || [];
 
@@ -417,9 +445,11 @@ function startRealtimeSync() {
 
 async function cloudPush() {
   if ( 
-    typeof tasks === 'undefined' || 
-    typeof pendingRewards === 'undefined' || 
-    typeof taskHistory === 'undefined' 
+  typeof tasks === 'undefined' ||
+  typeof pendingRewards === 'undefined' ||
+  typeof taskHistory === 'undefined' ||
+  typeof sisterScore === 'undefined' ||
+  typeof littleScore === 'undefined'
   ) 
     { console.log("⛔ Chặn cloudPush vì dữ liệu chưa load"); return; }
 console.time("firebasePush");
@@ -609,13 +639,15 @@ function saveHistoryLocal(item, type) {
     points: item.points,
     assignedTo: item.assignedTo || null,
     type: type,
-    time: new Date().toLocaleTimeString(
-      'vi-VN',
-      {
-        hour: '2-digit',
-        minute: '2-digit'
-      }
-    )
+    time: new Date().toLocaleString(
+  'vi-VN',
+  {
+     hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+  }
+)
   });
 
   // Chỉ giữ 50 lịch sử
