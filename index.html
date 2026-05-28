@@ -144,6 +144,7 @@
             <input id="customRewardName" type="text" placeholder="Món quà con muốn đổi..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:outline-none">
             <div class="flex gap-1.5">
               <input id="customRewardPoints" type="number" placeholder="Điểm đổi" class="w-1/2 bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-bold text-center focus:outline-none">
+              <div class="flex gap-6 items-center px-2 py-2 rounded-xl bg-slate-50 border border-slate-200 mb-3 text-sm font-semibold"> <label class="flex items-center gap-2 cursor-pointer"> <input type="radio" name="rewardRequester" value="Nhím" > 👧 Nhím </label> <label class="flex items-center gap-2 cursor-pointer"> <input type="radio" name="rewardRequester" value="Sóc" > 👧 Sóc </label> </div>
               <button onclick="requestCustomReward()" class="w-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs rounded-lg p-2 shadow-sm">📢 Đổi quà</button>
             </div>
           </div>
@@ -590,14 +591,12 @@ function renderTasks() {
   if(socCount === 0) socList.innerHTML = '<div class="text-xs text-slate-400 text-center py-4 italic">Hôm nay Sóc chưa có việc gì!</div>';
 }
 
-async function requestReward(points, rewardName) { 
-  const total = sisterScore + littleScore; 
-  if(total < points) { alert('❌ Điểm tích lũy hiện tại chưa đủ!'); return; } const requester = confirm( "👧 Người đang đổi quà là Nhím?\n\n" + "Bấm:\n" + "OK = Nhím\n" + "Cancel = Sóc" ) ? 'Nhím' : 'Sóc'; rewardConfirmations.push({ id: Date.now(), requester, rewardName, points, siblingApproved: false }); await cloudPush(); alert( `📢 ${requester} đã gửi yêu cầu đổi quà!\n\n` + "Người còn lại cần đồng ý trước khi bố mẹ duyệt." ); }
+async function requestReward(points, rewardName) { const total = sisterScore + littleScore; if (total < points) { alert('❌ Điểm tích lũy hiện tại chưa đủ!'); return; } const requester = document.querySelector( 'input[name="rewardRequester"]:checked' )?.value; if (!requester) { alert("❌ Hãy chọn người đổi quà"); return; } rewardConfirmations.push({ id: Date.now(), requester, rewardName, points, siblingApproved: false }); saveHistoryLocal({ name: `🎁 ${requester} yêu cầu đổi quà: ${rewardName}`, points: -points, assignedTo: requester }, 'reward-request'); await cloudPush(); alert( `📢 ${requester} đã gửi yêu cầu đổi quà!\n\n` + "Người còn lại cần đồng ý trước khi bố mẹ duyệt." ); }
 
 async function requestCustomReward() {
   const name = document.getElementById('customRewardName').value.trim(); const points = Number(document.getElementById('customRewardPoints').value);
   if(!name || points <= 0) { alert('⚠️ Hãy điền đầy đủ thông tin!'); return; }
-  pendingRewards.push({ name: `🤝 Thương lượng: ${name}`, points: points });
+  pendingRewards.push({ name: `🤝 Thương lượng: ${name}`, points: -points });
   document.getElementById('customRewardName').value = ""; document.getElementById('customRewardPoints').value = "";
   await cloudPush(); alert('📢 Đã gửi đề xuất thương lượng lên hệ thống!');
 }
@@ -609,11 +608,52 @@ function renderRewardConfirmations() {
   container.innerHTML = rewardConfirmations.map((r, index) => ` 
   <div class="bg-white border border-cyan-200 rounded-xl p-3 flex justify-between items-center text-xs shadow-sm"> 
     <div> <span class="font-bold text-cyan-700"> 👧 ${r.requester} </span> muốn đổi: <b>${r.rewardName}</b> 
-      <div class="text-[10px] text-slate-400 mt-1"> Cần người còn lại đồng ý </div> </div> <button onclick="approveRewardConfirmation(${index})" class="px-3 py-1.5 bg-cyan-600 text-white rounded-lg font-black" > 🤝 Đồng ý </button> </div> `).join(''); }
+      <div class="text-[10px] text-slate-400 mt-1"> Cần người còn lại đồng ý </div> </div> <div class="flex gap-2 mt-2">
 
-async function approveRewardConfirmation(index) { 
-  const request = rewardConfirmations[index]; pendingRewards.push({ name: request.rewardName, points: request.points }); 
-  rewardConfirmations.splice(index, 1); playSound(soundApprove); await cloudPush(); alert( "✅ Đã đồng thuận!\nBây giờ bố mẹ có thể duyệt." ); }
+<button
+onclick="approveRewardConfirmation(${index})"
+class="px-3 py-1.5 bg-cyan-600 text-white rounded-lg font-black"
+>
+🤝 Đồng ý
+</button>
+
+<button
+onclick="rejectRewardConfirmation(${index})"
+class="px-3 py-1.5 bg-red-500 text-white rounded-lg font-black"
+>
+❌ Từ chối
+</button>
+
+</div> </div> `).join(''); }
+
+async function approveRewardConfirmation(index) {
+
+  const request = rewardConfirmations[index];
+
+  const approver =
+    request.requester === 'Nhím'
+      ? 'Sóc'
+      : 'Nhím';
+
+  pendingRewards.push({
+    name: request.rewardName,
+    points: Math.abs(request.points)
+  });
+
+  saveHistoryLocal({
+    name: `🤝 ${approver} đồng ý cho ${request.requester} đổi quà: ${request.rewardName}`,
+    points: 0,
+    assignedTo: request.requester
+  }, 'reward-approve');
+
+  rewardConfirmations.splice(index, 1);
+
+  playSound(soundApprove);
+
+  await cloudPush();
+
+  alert("✅ Đã đồng thuận!\nBây giờ bố mẹ có thể duyệt.");
+}
 
       function renderPendingRewards() {
   const wrapper = document.getElementById('rewardApprovalWrapper'); const container = document.getElementById('rewardApprovalList');
@@ -621,12 +661,30 @@ async function approveRewardConfirmation(index) {
   wrapper.classList.remove('hidden');
   container.innerHTML = pendingRewards.map((reward, index) => `
     <div class="bg-white border border-amber-200 rounded-xl p-3 flex justify-between items-center text-xs shadow-sm">
-      <div><span class="text-amber-800 font-bold">🎁 Yêu cầu đổi quà:</span> <span class="font-extrabold text-slate-800 text-sm">${reward.name}</span><span class="block text-[10px] text-slate-400 mt-0.5">Giá trị quỹ chung cần trừ: <b class="text-amber-600">${reward.points}đ</b></span></div>
+      <div><span class="text-amber-800 font-bold">🎁 Yêu cầu đổi quà:</span> <span class="font-extrabold text-slate-800 text-sm">${reward.name}</span><span class="block text-[10px] text-slate-400 mt-0.5">Giá trị quỹ chung cần trừ: <b class="text-red-600 font-black">${reward.points}đ</b></span></div>
       <div class="flex gap-1.5">
         <button onclick="approveCustomReward(${index})" class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-black shadow-sm">👍 Cho phép</button>
         <button onclick="rejectCustomReward(${index})" class="px-2 py-1.5 bg-slate-200 text-slate-600 rounded-lg font-bold">❌ Từ chối</button>
       </div>
     </div>`).join('');
+}
+
+async function rejectRewardConfirmation(index) {
+
+  const request = rewardConfirmations[index];
+
+  saveHistoryLocal({
+    name: `❌ ${request.requester} bị từ chối đổi quà: ${request.rewardName}`,
+    points: 0,
+    assignedTo: request.requester
+  }, 'reward-reject');
+
+  rewardConfirmations.splice(index, 1);
+
+  await cloudPush();
+
+  alert("❌ Đã từ chối yêu cầu");
+
 }
 
 async function approveCustomReward(index) {
@@ -682,10 +740,32 @@ function renderHistory() {
   const container = document.getElementById('historyContainer');
   if(!taskHistory || taskHistory.length === 0) { container.innerHTML = '<div class="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400">Chưa có hoạt động nào được ghi nhận.</div>'; return; }
   container.innerHTML = taskHistory.map(item => {
-    if (item.type === 'reward') {
-      return `<div class="bg-red-50/50 border border-red-100 rounded-xl p-3 flex justify-between items-center text-xs">
-          <div><span class="font-bold text-red-600">🎁 ĐÃ ĐỔI QUÀ:</span> <span class="font-semibold text-slate-900">${item.name}</span><span class="text-slate-400 block text-[10px] mt-0.5">⏱ Duyệt đổi lúc ${item.time}</span></div>
-          <div class="text-red-600 font-extrabold text-sm shrink-0">-${item.points}đ</div></div>`;
+   if (
+  item.type === 'reward' ||
+  item.type === 'reward-request'
+) {
+      return `
+<div class="bg-red-50/50 border border-red-100 rounded-xl p-3 flex justify-between items-center text-xs">
+  
+  <div>
+    <span class="font-bold text-red-600">
+      🎁 ĐÃ ĐỔI QUÀ:
+    </span>
+
+    <span class="font-semibold text-slate-900">
+      ${item.name}
+    </span>
+
+    <span class="text-slate-400 block text-[10px] mt-0.5">
+      ⏱ Duyệt đổi lúc ${item.time}
+    </span>
+  </div>
+
+  <div class="text-red-600 font-extrabold text-sm shrink-0">
+    -${Math.abs(item.points)}đ
+  </div>
+
+</div>`;
     } else if (item.type === 'penalty') {
       return `<div class="bg-amber-100 border border-amber-200 rounded-xl p-3 flex justify-between items-center text-xs">
           <div><span class="font-black text-amber-700">🚨 PHẠT SANG NGÀY:</span> <span class="font-bold text-slate-800">${item.assignedTo === 'sister' ? 'Nhím' : 'Sóc'}</span> <span class="text-slate-600">bị trừ điểm do lười: ${item.name}</span></div>
