@@ -807,11 +807,10 @@ async function secureResetAllData() {
   const password = prompt("🚨 NHẬP MÃ PIN ĐỂ XÓA TOÀN BỘ CLOUD DATABASE:");
   if (password !== ADMIN_PASSWORD_PIN) { alert("❌ Sai mã PIN!"); return; }
   if(confirm('Xóa sạch điểm số và lịch sử?')) {
-    sisterScore = 0; littleScore = 0; tasks = []; pendingRewards = []; taskHistory = [];
-    avatarsData = { nhimAvatar: "", socAvatar: "", familyPhoto: "" };
-    document.getElementById('nhimAvatar').src = 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png';
-    document.getElementById('socAvatar').src = 'https://cdn-icons-png.flaticon.com/512/4140/4140051.png';
-    document.getElementById('familyPhoto').src = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=600&auto=format&fit=crop';
+    tasks = [];
+pendingRewards = [];
+taskHistory = [];
+rewardConfirmations = [];
     await cloudPush();
   }
 }
